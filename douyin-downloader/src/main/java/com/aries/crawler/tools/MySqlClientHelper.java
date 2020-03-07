@@ -37,7 +37,7 @@ public class MySqlClientHelper {
                             .setPassword("1qaz2wsx");
 
                     PoolOptions poolOptions = new PoolOptions()
-                            .setMaxSize(5);
+                            .setMaxSize(20);
 
                     singletonMySQLPool = MySQLPool.pool(vertx, connectOptions, poolOptions);
                 }

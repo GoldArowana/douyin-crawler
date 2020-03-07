@@ -1,12 +1,14 @@
 package com.aries.crawler.tools;
 
-import com.aries.crawler.Model.DataModel;
+import com.aries.crawler.Model.DataModelable;
 import com.aries.crawler.annotation.MysqlField;
+import com.aries.crawler.verticles.WideDataProcessProducerVerticle;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.sqlclient.Row;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 /**
  * vert.x没有orm, 使用mysql获取到的数据很难转化为对象。
@@ -28,6 +30,9 @@ import java.util.Arrays;
  * @author arowana
  */
 public class Orm {
+
+    private static final Logger logger = LoggerFactory.getLogger(WideDataProcessProducerVerticle.class);
+
     /**
      * 防止实例化
      */
@@ -41,7 +46,7 @@ public class Orm {
      * @param <T>   继承DataModel的某个类
      * @return 返回clazz类型的一个实例
      */
-    public static <T extends DataModel> T getModel(Row row, Class<T> clazz) {
+    public static <T extends DataModelable> T getModel(Row row, Class<T> clazz) {
         try {
             // 反射获取clazz的构造器
             Constructor<? extends T> constructor = clazz.getConstructor();
@@ -57,6 +62,10 @@ public class Orm {
                     if (annotation != null) {
                         // 根据表中字段名获取所在第几列
                         int columnIndex = row.getColumnIndex(annotation.alias());
+                        if (columnIndex < 0) {
+                            logger.error("index less than 0, ", annotation.alias());
+                            continue;
+                        }
                         // 根据类型和列, 获取值
                         Object columnValue = row.get(annotation.type(), columnIndex);
                         // 将值反射到dataModel里
@@ -66,7 +75,7 @@ public class Orm {
             }
             return dataModel;
         } catch (Exception e) {
-            System.err.println("exception in MysqlHelper.getModel(Row, Class): " + Arrays.toString(e.getStackTrace()));
+            logger.error("exception in MysqlHelper.getModel(Row, Class): ", e);
         }
         return null;
     }

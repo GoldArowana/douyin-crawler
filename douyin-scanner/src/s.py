@@ -34,10 +34,15 @@ def response(flow):
             db = pymysql.connect("localhost", "root", "1qaz2wsx", "douyin_crawler")
             sql = """INSERT INTO douyin_crawler_log(aweme_id,aweme_desc,aweme_create_time,author_uid,author_short_id,author_nickname,author_signature,avatar_larger_url,
             author_share_info_qrcode_url,video_cover_url,video_dynamic_cover_url,video_download_addr_url ,video_share_url ,
-            video_video_tag ,video_duration)
+            video_tag ,video_duration)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             on duplicate key update video_download_addr_url = %s"""
             cursor = db.cursor()
+
+            if 'video_tag' in aweme_map:
+                t_tag = json.dumps(aweme_map['video_tag'], ensure_ascii=False)
+            else:
+                t_tag = "{}"
 
             values = (aweme_map['aweme_id'], aweme_map['aweme_desc'], aweme_map['aweme_create_time'],
                       aweme_map['author_uid'], aweme_map['author_short_id'],
@@ -45,7 +50,7 @@ def response(flow):
                       aweme_map['avatar_larger_url'], aweme_map['author_share_info_qrcode'],
                       aweme_map['video_cover'], aweme_map['video_dynamic_cover'],
                       aweme_map['video_download_addr'], aweme_map['video_share_url'],
-                      json.dumps(aweme_map['video_tag'], ensure_ascii=False),
+                      t_tag,
                       aweme_map['video_duration'], aweme_map['video_download_addr'])
 
             try:

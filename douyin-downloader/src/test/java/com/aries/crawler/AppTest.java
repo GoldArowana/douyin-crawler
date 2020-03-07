@@ -2,8 +2,6 @@ package com.aries.crawler;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClient;
 import org.junit.jupiter.api.Test;
 
 public class AppTest {
@@ -28,8 +26,9 @@ public class AppTest {
         Future<Void> fut1 = Future.future(promise -> vertx.fileSystem().createFile("target/classes/foo", promise));
 
         Future<Void> fut2 = fut1.compose(x -> {
+
             try {
-                Thread.sleep(10000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -37,11 +36,13 @@ public class AppTest {
             return Future.<Void>future(promise -> vertx.fileSystem().createFile("target/classes/foo2", promise));
         });
 
-//
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }

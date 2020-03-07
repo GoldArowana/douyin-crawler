@@ -1,8 +1,11 @@
 package com.aries.crawler.tools;
 
+import com.aries.crawler.Starter;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.SqlConnection;
@@ -12,6 +15,8 @@ import io.vertx.sqlclient.Tuple;
  * @author arowana
  */
 public class MySqlExecuteHelper {
+    private static final Logger logger = LoggerFactory.getLogger(MySqlExecuteHelper.class);
+
     /**
      * 防止实例化
      */
@@ -30,8 +35,9 @@ public class MySqlExecuteHelper {
             if (connectionHandlerRes.succeeded()) {
                 SqlConnection connection = connectionHandlerRes.result();
                 connection.preparedQuery(sql, arguments, handler);
+                connection.close();
             } else {
-                System.out.println("Could not connect: " + connectionHandlerRes.cause().getMessage());
+                logger.error("Could not connect: " + connectionHandlerRes.cause().getMessage());
             }
         });
     }

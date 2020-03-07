@@ -1,7 +1,10 @@
 package com.aries.crawler;
 
+import com.aries.crawler.eventbus.codec.CommonMessageCodec;
+import com.aries.crawler.eventbus.message.CommonResponseMessage;
+import com.aries.crawler.eventbus.message.DouyinUserInfoMessage;
 import com.aries.crawler.verticles.DatabaseVerticle;
-import com.aries.crawler.verticles.ProducerVerticle;
+import com.aries.crawler.verticles.WideDataProcessProducerVerticle;
 import io.vertx.core.*;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -18,9 +21,11 @@ public class Starter {
         System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
 
         Vertx vertx = Vertx.vertx();
+        vertx.eventBus().registerDefaultCodec(DouyinUserInfoMessage.class, new CommonMessageCodec<>());
+        vertx.eventBus().registerDefaultCodec(CommonResponseMessage.class, new CommonMessageCodec<>());
 
         Future<Void> producerFuture = Future.future(res -> {
-            vertx.deployVerticle(ProducerVerticle.class.getTypeName(), deployRes -> {
+            vertx.deployVerticle(WideDataProcessProducerVerticle.class.getTypeName(), deployRes -> {
                 if (deployRes.succeeded()) {
                     res.complete();
                 } else {
@@ -40,12 +45,11 @@ public class Starter {
             });
         });
 
-
         CompositeFuture.all(producerFuture, databaseFuture).setHandler(ar -> {
             if (ar.succeeded()) {
-                System.out.println("所有Verticle启动完成");
+                logger.info("所有Verticle启动完成");
             } else {
-                System.err.println("至少一个服务器启动失败:" + ar.cause());
+                logger.error("至少一个服务器启动失败:{}", ar.cause());
             }
         });
     }

@@ -11,7 +11,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {ElementType.FIELD})
 public @interface MysqlField {
+    /**
+     * 对应的数据库字段名
+     */
     public String alias();
 
+    /**
+     * 对应的类型
+     */
     public Class<?> type();
 }

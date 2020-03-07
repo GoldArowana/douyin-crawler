@@ -5,6 +5,6 @@ package com.aries.crawler.Model;
  *
  * @author arowana
  */
-public abstract class DataModel {
+public interface DataModelable {
 
 }
