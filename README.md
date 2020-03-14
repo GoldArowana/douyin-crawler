@@ -19,8 +19,13 @@
 本项目使用技术：
 * mitmdump + python做代理拦截
 * vertx作为整个项目的主要框架
-* vertx拼接sql不方便, 自己实现了一个sqlBuilder, 方便拼接sql
+* 裸写sql不方便, 自己实现了一个sqlBuilder, 方便拼接sql (最开始是使用的第三方依赖[sqlBuilder](https://github.com/jkrasnay/sqlbuilder)但是这个用起来有很多不足之处, 比如不支持limit, 不支持prepare等等
 * 自己用反射实现了一个对象关系应该工具类com/aries/crawler/tools/Orm.java , 弥补了vertx没有orm的不便利之处。美其名曰：几十行代码实现了一个orm。
 
 ----
-本项目仅供学习研究, 不提供任何反爬虫等功能, 请不要恶意爬取, 恶意使用本代码者后果自负。
+为什么不用spring和mybatis
+1. 我不喜欢自己的项目里有一大堆眼花缭乱的第三方依赖(你可以看一下本项目的pom.xml, 目前只有vertx-core、vertx-mysql, 还有一个用于单元测试的junit)
+1. 不喜欢无脑使用spring和mybatis的行为. 经常见到一些java工程师打算新建个项目写点东西时, 第一件事情就是想都不想就直接引入一套spring(醒醒啊喂, 你是java工程师, 不是spring工程师)。 并不是认为这些不好, 只是认为这并不是解决问题的通用方案, 更不是完美方案。
+1. 这是我第一次使用vertx, 但不是第一次不使用spring。(netty/jFinal/play/akka都是很不错的框架呀)
+----
+本项目仅供学习研究, 不提供任何反爬虫等功能, 请不要恶意爬取。 恶意使用本代码者, 后果自负!

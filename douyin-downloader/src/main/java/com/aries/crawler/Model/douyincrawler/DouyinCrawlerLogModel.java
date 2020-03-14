@@ -11,6 +11,21 @@ import java.time.LocalDateTime;
  * @author arowana
  */
 public class DouyinCrawlerLogModel implements DataModelable {
+    /**
+     * 提取用户数据完成
+     */
+    public static final Integer STATUS_USER_DONE = 1;
+
+    /**
+     * 提取视频信息完成
+     */
+    public static final Integer STATUS_VIDEO_DONE = 2;
+
+    /**
+     * 用户信息、视频信息 都提取完成
+     */
+    public static final Integer STATUS_ALL_DONE = 3;
+
     @MysqlField(alias = "id", type = Long.class)
     private Long id;
 

@@ -3,7 +3,7 @@ package com.aries.crawler;
 import com.aries.crawler.sqlbuilder.InsertBuilder;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
