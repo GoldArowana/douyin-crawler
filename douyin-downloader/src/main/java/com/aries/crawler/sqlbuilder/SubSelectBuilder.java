@@ -24,10 +24,10 @@ public class SubSelectBuilder extends SelectBuilder {
     @Override
     public String toString() {
         return new StringBuilder()
-        .append("(")
-        .append(super.toString())
-        .append(") as ")
-        .append(alias)
-        .toString();
+                .append("(")
+                .append(super.toString())
+                .append(") as ")
+                .append(alias)
+                .toString();
     }
 }

@@ -3,7 +3,7 @@ package com.aries.crawler.tools;
 import io.vertx.core.Vertx;
 import io.vertx.mysqlclient.MySQLConnectOptions;
 import io.vertx.mysqlclient.MySQLPool;
-import io.vertx.sqlclient.*;
+import io.vertx.sqlclient.PoolOptions;
 
 /**
  * 用于获取mysql客户端、连接池
@@ -29,7 +29,7 @@ public class MySqlClientHelper {
         if (singletonMySQLPool == null) {
             synchronized (MySqlClientHelper.class) {
                 if (singletonMySQLPool == null) {
-                    MySQLConnectOptions connectOptions = new MySQLConnectOptions()
+                    var connectOptions = new MySQLConnectOptions()
                             .setPort(3306)
                             .setHost("localhost")
                             .setDatabase("douyin_crawler")
@@ -38,8 +38,7 @@ public class MySqlClientHelper {
                             .setCachePreparedStatements(true)
                             .setPreparedStatementCacheMaxSize(100000);
 
-
-                    PoolOptions poolOptions = new PoolOptions()
+                    var poolOptions = new PoolOptions()
                             .setMaxSize(20);
 
                     singletonMySQLPool = MySQLPool.pool(vertx, connectOptions, poolOptions);

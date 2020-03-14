@@ -1,7 +1,7 @@
-package com.aries.crawler.Model.douyincrawler;
+package com.aries.crawler.model.douyincrawler;
 
-import com.aries.crawler.Model.DataModelable;
 import com.aries.crawler.annotation.MysqlField;
+import com.aries.crawler.model.DataModelable;
 
 import java.time.LocalDateTime;
 

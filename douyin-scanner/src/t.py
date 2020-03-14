@@ -1,6 +1,5 @@
-import sys
-
 import pymysql
+import sys
 
 
 def main():

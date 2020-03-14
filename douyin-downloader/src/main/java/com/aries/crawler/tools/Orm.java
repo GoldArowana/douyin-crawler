@@ -1,8 +1,8 @@
 package com.aries.crawler.tools;
 
-import com.aries.crawler.Model.DataModelable;
 import com.aries.crawler.annotation.MysqlField;
-import com.aries.crawler.verticles.WideDataProcessProducerVerticle;
+import com.aries.crawler.model.DataModelable;
+import com.aries.crawler.verticles.WideDataPickUpVerticle;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.sqlclient.Row;
@@ -31,7 +31,7 @@ import java.lang.reflect.Field;
  */
 public class Orm {
 
-    private static final Logger logger = LoggerFactory.getLogger(WideDataProcessProducerVerticle.class);
+    private static final Logger logger = LoggerFactory.getLogger(WideDataPickUpVerticle.class);
 
     /**
      * 防止实例化

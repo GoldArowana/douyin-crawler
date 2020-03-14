@@ -7,11 +7,11 @@ sys.path.append('/usr/local/lib/python3.8/site-packages')
 sys.path.append('/usr/local/lib/python3.7/site-packages')
 
 import pymysql as pymysql
+
 db = pymysql.connect("localhost", "root", "1qaz2wsx", "douyin_crawler")
 
 
 def response(flow):
-
     # 通过抓包软包软件获取请求的接口
     if '/aweme/favorite' in flow.request.url or '/aweme/post' in flow.request.url:
         # print("-------"+flow.response.text)

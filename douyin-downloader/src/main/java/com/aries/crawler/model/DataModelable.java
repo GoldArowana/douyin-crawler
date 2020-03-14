@@ -1,4 +1,4 @@
-package com.aries.crawler.Model;
+package com.aries.crawler.model;
 
 /**
  * 数据模型的抽象类。

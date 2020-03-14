@@ -1,6 +1,6 @@
-package com.aries.crawler.eventbus.codec;
+package com.aries.crawler.trans.codec;
 
-import com.aries.crawler.eventbus.Messagable;
+import com.aries.crawler.trans.Messagable;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageCodec;
 import io.vertx.core.json.JsonObject;
@@ -9,7 +9,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.UUID;
 
 /**
- * common message codec
+ * common message codec（通用的codec）
  *
  * @author arowana
  */

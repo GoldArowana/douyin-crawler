@@ -1,6 +1,5 @@
 package com.aries.crawler.tools;
 
-import com.aries.crawler.Starter;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;

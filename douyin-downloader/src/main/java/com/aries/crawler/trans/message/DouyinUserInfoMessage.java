@@ -1,11 +1,10 @@
-package com.aries.crawler.eventbus.message;
+package com.aries.crawler.trans.message;
 
-import com.aries.crawler.Model.douyincrawler.DouyinCrawlerLogModel;
-import com.aries.crawler.eventbus.Messagable;
 import com.aries.crawler.tools.Urls;
+import com.aries.crawler.trans.Messagable;
 
 /**
- * immutable message
+ * immutable message, 用户数据message
  *
  * @author arowana
  */
@@ -59,15 +58,15 @@ public class DouyinUserInfoMessage implements Messagable {
     }
 
 
-    public static DouyinUserInfoMessage of(DouyinCrawlerLogModel douyinCrawlerLogModel) {
+    public static DouyinUserInfoMessage of(DouyinWideDataMessage wideDataMessage) {
         return new DouyinUserInfoMessageBuilder()
-                .uid(douyinCrawlerLogModel.authorUid)
-                .shortId(douyinCrawlerLogModel.authorShortId)
-                .nickname(douyinCrawlerLogModel.authorNickname)
-                .signature(douyinCrawlerLogModel.authorSignature)
-                .avatarLargerUrl(douyinCrawlerLogModel.avatarLargerUrl)
-                .shareUrl(Urls.getUserSharePage(douyinCrawlerLogModel.authorUid))
-                .shareInfoQrCodeUrl(douyinCrawlerLogModel.authorShareInfoQrcodeUrl)
+                .uid(wideDataMessage.getAuthorUid())
+                .shortId(wideDataMessage.getAuthorShortId())
+                .nickname(wideDataMessage.getAuthorNickname())
+                .signature(wideDataMessage.getAuthorSignature())
+                .avatarLargerUrl(wideDataMessage.getAvatarLargerUrl())
+                .shareUrl(Urls.getUserSharePage(wideDataMessage.getAuthorUid()))
+                .shareInfoQrCodeUrl(wideDataMessage.getAuthorShareInfoQrcodeUrl())
                 .build();
     }
 

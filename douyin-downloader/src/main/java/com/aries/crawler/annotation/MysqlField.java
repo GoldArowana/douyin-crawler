@@ -14,10 +14,10 @@ public @interface MysqlField {
     /**
      * 对应的数据库字段名
      */
-    public String alias();
+    String alias();
 
     /**
      * 对应的类型
      */
-    public Class<?> type();
+    Class<?> type();
 }

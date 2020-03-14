@@ -32,14 +32,15 @@ public class InsertBuilder extends AbstractSqlBuilder {
     }
 
     public List<Object> getValues() {
-        List<Object> result = new ArrayList<>();
+        var result = new ArrayList<>();
         result.addAll(values);
         result.addAll(upValues);
         return result;
     }
 
     public String getSql() {
-        StringBuilder sql = new StringBuilder("insert into ").append(table).append(" (");
+        var sql = new StringBuilder("insert into ")
+                .append(table).append(" (");
         appendList(sql, columns, "", ", ");
         sql.append(") values (");
         sql.append(repeat("?", columns.size(), ","));

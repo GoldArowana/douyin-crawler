@@ -1,6 +1,5 @@
 package com.aries.crawler.sqlbuilder;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

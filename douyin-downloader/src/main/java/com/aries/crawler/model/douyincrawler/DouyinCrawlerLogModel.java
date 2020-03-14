@@ -1,7 +1,7 @@
-package com.aries.crawler.Model.douyincrawler;
+package com.aries.crawler.model.douyincrawler;
 
-import com.aries.crawler.Model.DataModelable;
 import com.aries.crawler.annotation.MysqlField;
+import com.aries.crawler.model.DataModelable;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +25,8 @@ public class DouyinCrawlerLogModel implements DataModelable {
      * 用户信息、视频信息 都提取完成
      */
     public static final Integer STATUS_ALL_DONE = 3;
+
+    public static final String TABLE = "douyin_crawler_log";
 
     @MysqlField(alias = "id", type = Long.class)
     private Long id;

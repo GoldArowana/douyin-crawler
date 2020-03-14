@@ -1,15 +1,27 @@
-package com.aries.crawler.eventbus.message;
+package com.aries.crawler.trans.message;
 
-import com.aries.crawler.eventbus.Messagable;
+import com.aries.crawler.trans.Messagable;
 
 /**
- * immutable
+ * immutable，通用message
  *
  * @author arowana
  */
 public class CommonResponseMessage<T> implements Messagable {
     private final Integer code;
     private final T message;
+
+    public static final CommonResponseMessage<Object> COMMON_SUCCESS_MESSAGE = CommonResponseMessage.CommonResponseMessageBuilder
+            .aCommonResponseMessage()
+            .code(100)
+            .message("success")
+            .build();
+
+    public static final CommonResponseMessage<Object> COMMON_FAILED_MESSAGE = CommonResponseMessage.CommonResponseMessageBuilder
+            .aCommonResponseMessage()
+            .code(1000)
+            .message("failed")
+            .build();
 
     public CommonResponseMessage(Integer code, T message) {
         this.code = code;

@@ -1,4 +1,4 @@
-package com.aries.crawler.eventbus;
+package com.aries.crawler.trans;
 
 /**
  * @author arowana

@@ -1,6 +1,5 @@
 package com.aries.crawler.sqlbuilder;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,8 @@ public class UpdateBuilder extends AbstractSqlBuilder {
 
     @Override
     public String toString() {
-        StringBuilder sql = new StringBuilder("update ").append(table);
+        var sql = new StringBuilder("update ")
+                .append(table);
         appendList(sql, sets, " set ", ", ");
         appendList(sql, wheres, " where ", " and ");
         return sql.toString();
