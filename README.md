@@ -19,7 +19,7 @@
 本项目使用技术：
 * mitmdump + python做代理拦截
 * vertx作为整个项目的主要框架
-* sqlbuilder帮助拼接sql语句
+* vertx拼接sql不方便, 自己实现了一个sqlBuilder, 方便拼接sql
 * 自己用反射实现了一个对象关系应该工具类com/aries/crawler/tools/Orm.java , 弥补了vertx没有orm的不便利之处。美其名曰：几十行代码实现了一个orm。
 
 ----

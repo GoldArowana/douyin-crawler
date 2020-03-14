@@ -1,10 +1,10 @@
 package com.aries.crawler.verticles;
 
-import ca.krasnay.sqlbuilder.SelectBuilder;
 import com.aries.crawler.Model.douyincrawler.DouyinCrawlerLogModel;
 import com.aries.crawler.eventbus.message.DouyinUserInfoMessage;
 import com.aries.crawler.tools.MySqlExecuteHelper;
 import com.aries.crawler.tools.Orm;
+import com.aries.crawler.sqlbuilder.SelectBuilder;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -18,7 +18,8 @@ public class WideDataProcessProducerVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        String sql = new SelectBuilder().column("*").from("douyin_crawler_log").toString();
+        String sql = new SelectBuilder().column("*").from("douyin_crawler_log").limit(10L).toString();
+//        sql += " limit 100";
 
         MySqlExecuteHelper.execute(vertx, sql, Tuple.tuple(), mysqlExecutorRes -> {
             if (mysqlExecutorRes.succeeded()) {
@@ -32,11 +33,11 @@ public class WideDataProcessProducerVerticle extends AbstractVerticle {
                             } else {
                                 logger.error("Received reply failed: " + douyinUserInfoMessage.getUid());
                             }
-                            logger.info("received reply body: " + reply.result().body());
-
                         });
                     }
                 });
+            } else {
+                logger.error(mysqlExecutorRes.cause());
             }
         });
     }

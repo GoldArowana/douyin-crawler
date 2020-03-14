@@ -35,8 +35,14 @@ public class Starter {
         });
 
 
+        DeploymentOptions options = new DeploymentOptions()
+                .setWorker(true)
+                .setInstances(5) // matches the worker pool size below
+                .setWorkerPoolName("data-insert-pool")
+                .setWorkerPoolSize(5);
+
         Future<Void> databaseFuture = Future.future(res -> {
-            vertx.deployVerticle(DatabaseVerticle.class.getTypeName(), deployRes -> {
+            vertx.deployVerticle(DatabaseVerticle.class.getTypeName(),options, deployRes -> {
                 if (deployRes.succeeded()) {
                     res.complete();
                 } else {

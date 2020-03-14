@@ -31,6 +31,8 @@ public class MySqlExecuteHelper {
      * @param handler   回调
      */
     public static void execute(Vertx vertx, String sql, Tuple arguments, Handler<AsyncResult<RowSet<Row>>> handler) {
+        logger.debug("准备执行sql: " + sql);
+        logger.debug("sql args: " + arguments);
         MySqlClientHelper.getClient(vertx).getConnection(connectionHandlerRes -> {
             if (connectionHandlerRes.succeeded()) {
                 SqlConnection connection = connectionHandlerRes.result();

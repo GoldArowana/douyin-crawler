@@ -34,7 +34,10 @@ public class MySqlClientHelper {
                             .setHost("localhost")
                             .setDatabase("douyin_crawler")
                             .setUser("root")
-                            .setPassword("1qaz2wsx");
+                            .setPassword("1qaz2wsx")
+                            .setCachePreparedStatements(true)
+                            .setPreparedStatementCacheMaxSize(100000);
+
 
                     PoolOptions poolOptions = new PoolOptions()
                             .setMaxSize(20);

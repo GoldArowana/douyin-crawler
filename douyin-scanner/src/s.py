@@ -7,11 +7,14 @@ sys.path.append('/usr/local/lib/python3.8/site-packages')
 sys.path.append('/usr/local/lib/python3.7/site-packages')
 
 import pymysql as pymysql
+db = pymysql.connect("localhost", "root", "1qaz2wsx", "douyin_crawler")
 
 
 def response(flow):
+
     # 通过抓包软包软件获取请求的接口
     if '/aweme/favorite' in flow.request.url or '/aweme/post' in flow.request.url:
+        # print("-------"+flow.response.text)
         for aweme in json.loads(flow.response.text)['aweme_list']:
             aweme_map = {}
             aweme_map['aweme_id'] = aweme['aweme_id']
@@ -31,7 +34,6 @@ def response(flow):
                 aweme_map['video_tag'] = aweme['text_extra']
             aweme_map['video_duration'] = aweme['duration']
 
-            db = pymysql.connect("localhost", "root", "1qaz2wsx", "douyin_crawler")
             sql = """INSERT INTO douyin_crawler_log(aweme_id,aweme_desc,aweme_create_time,author_uid,author_short_id,author_nickname,author_signature,avatar_larger_url,
             author_share_info_qrcode_url,video_cover_url,video_dynamic_cover_url,video_download_addr_url ,video_share_url ,
             video_tag ,video_duration)
@@ -66,5 +68,5 @@ def response(flow):
                 print("here is err:", sys.exc_info())
 
                 # 关闭数据库连接
-            db.close()
             # print("crawler res: ", aweme_map)
+    # db.close()

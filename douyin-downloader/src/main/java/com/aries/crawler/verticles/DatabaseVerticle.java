@@ -1,17 +1,17 @@
 package com.aries.crawler.verticles;
 
-import ca.krasnay.sqlbuilder.InsertBuilder;
 import com.aries.crawler.eventbus.message.CommonResponseMessage;
 import com.aries.crawler.eventbus.message.DouyinUserInfoMessage;
 import com.aries.crawler.tools.MySqlExecuteHelper;
+import com.aries.crawler.sqlbuilder.InsertBuilder;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.sqlclient.Tuple;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author arowana
@@ -27,21 +27,21 @@ public class DatabaseVerticle extends AbstractVerticle {
     private void mysqlDouyinUserInsertHandler(Message<Object> message) {
         DouyinUserInfoMessage userInfoMessage = (DouyinUserInfoMessage) message.body();
 
-        String sql = new InsertBuilder("douyin_user_info")
-                .set("uid", String.format("'%d'", userInfoMessage.getUid()))
-                .set("short_id", String.format("'%d'", userInfoMessage.getShortId()))
-                .set("nickname", String.format("'%s'", userInfoMessage.getNickname()))
-                .set("signature", String.format("'%s'", userInfoMessage.getSignature()))
-                .set("avatar_larger_url", String.format("'%s'", userInfoMessage.getAvatarLargerUrl()))
-                .set("share_url", String.format("'%s'", userInfoMessage.getShareUrl()))
-                .set("share_info_qrcode_url", String.format("'%s'", userInfoMessage.getShareInfoQrCodeUrl()))
-                .toString();
+        InsertBuilder ib = new InsertBuilder("douyin_user_info")
+                .set("uid", userInfoMessage.getUid())
+                .set("short_id", userInfoMessage.getShortId())
+                .set("nickname", userInfoMessage.getNickname())
+                .set("signature", userInfoMessage.getSignature())
+                .set("avatar_larger_url", userInfoMessage.getAvatarLargerUrl())
+                .set("share_url", userInfoMessage.getShareUrl())
+                .set("share_info_qrcode_url", userInfoMessage.getShareInfoQrCodeUrl())
+                .onDuplicateKeyUpdate("ut", LocalDateTime.now());
+        String sql = ib.getSql();
+        List<Object> values = ib.getValues();
 
-        sql += " on duplicate key update ut = '" + LocalDateTime.now() + "'";
+//        logger.info("insert sql:" + sql + "\nvalues:" + values);
 
-        logger.debug("insert sql:" + sql);
-
-        MySqlExecuteHelper.execute(vertx, sql, Tuple.tuple(), mysqlExecutorRes -> {
+        MySqlExecuteHelper.execute(vertx, sql, Tuple.tuple(values), mysqlExecutorRes -> {
             if (mysqlExecutorRes.succeeded()) {
                 var response = CommonResponseMessage.CommonResponseMessageBuilder
                         .aCommonResponseMessage()
@@ -53,10 +53,9 @@ public class DatabaseVerticle extends AbstractVerticle {
                 var response = CommonResponseMessage.CommonResponseMessageBuilder
                         .aCommonResponseMessage()
                         .code(1000)
-                        .message("failed")
+                        .message("failed, " + mysqlExecutorRes.cause())
                         .build();
                 message.reply(response);
-                logger.error("insert user info failed. ", mysqlExecutorRes.cause());
             }
         });
     }

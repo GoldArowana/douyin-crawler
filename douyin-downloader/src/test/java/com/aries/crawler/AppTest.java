@@ -1,8 +1,12 @@
 package com.aries.crawler;
 
+import com.aries.crawler.sqlbuilder.InsertBuilder;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class AppTest {
     @Test
@@ -45,4 +49,20 @@ public class AppTest {
 
 
     }
+
+    @Test
+    public void TestInsertSql() {
+        InsertBuilder ib = new InsertBuilder("douyin_user_info")
+                .set("uid", 123)
+                .set("short_id", 234234)
+                .set("nickname", "jinlong")
+                .onDuplicateKeyUpdate("ut", LocalDateTime.now())
+                .onDuplicateKeyUpdate("ut", LocalDateTime.now());
+        String sql = ib.getSql();
+        List<Object> values = ib.getValues();
+
+        System.out.println(sql);
+        System.out.println(values);
+    }
+
 }
