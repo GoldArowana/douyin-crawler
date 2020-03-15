@@ -19,10 +19,43 @@ public class DouyinVideoInfoMessage implements Messagable {
     private final String videoVideoTag;
     private final Long videoDuration;
     private final Integer type;
-    private final Integer status;
+
+    public DouyinVideoInfoMessage(Long awemeId, Long authorUid, String awemeDesc, Long awemeCreateTime, String videoCoverUrl, String videoDynamicCoverUrl, String videoDownloadAddrUrl, String videoShareUrl, String videoVideoTag, Long videoDuration, Integer type) {
+        this.awemeId = awemeId;
+        this.authorUid = authorUid;
+        this.awemeDesc = awemeDesc;
+        this.awemeCreateTime = awemeCreateTime;
+        this.videoCoverUrl = videoCoverUrl;
+        this.videoDynamicCoverUrl = videoDynamicCoverUrl;
+        this.videoDownloadAddrUrl = videoDownloadAddrUrl;
+        this.videoShareUrl = videoShareUrl;
+        this.videoVideoTag = videoVideoTag;
+        this.videoDuration = videoDuration;
+        this.type = type;
+    }
+
+    public static DouyinVideoInfoMessage of(DouyinWideDataMessage wideDataMessage) {
+        return new DouyinVideoInfoMessageBuilder()
+                .awemeId(wideDataMessage.getAwemeId())
+                .awemeDesc(wideDataMessage.getAwemeDesc())
+                .awemeCreateTime(wideDataMessage.getAwemeCreateTime())
+                .authorUid(wideDataMessage.getAuthorUid())
+                .videoCoverUrl(wideDataMessage.getVideoCoverUrl())
+                .videoDynamicCoverUrl(wideDataMessage.getVideoDynamicCoverUrl())
+                .videoDownloadAddrUrl(wideDataMessage.getVideoDownloadAddrUrl())
+                .videoShareUrl(wideDataMessage.getVideoShareUrl())
+                .videoVideoTag(wideDataMessage.getVideoVideoTag())
+                .videoDuration(wideDataMessage.getVideoDuration())
+                .type(wideDataMessage.getType())
+                .build();
+    }
 
     public Long getAwemeId() {
         return awemeId;
+    }
+
+    public Long getAuthorUid() {
+        return authorUid;
     }
 
     public String getAwemeDesc() {
@@ -31,10 +64,6 @@ public class DouyinVideoInfoMessage implements Messagable {
 
     public Long getAwemeCreateTime() {
         return awemeCreateTime;
-    }
-
-    public Long getAuthorUid() {
-        return authorUid;
     }
 
     public String getVideoCoverUrl() {
@@ -65,59 +94,35 @@ public class DouyinVideoInfoMessage implements Messagable {
         return type;
     }
 
-    public Integer getStatus() {
-        return status;
+    @Override
+    public String toString() {
+        return "DouyinVideoInfoMessage{" +
+                "awemeId=" + awemeId +
+                ", authorUid=" + authorUid +
+                ", awemeDesc='" + awemeDesc + '\'' +
+                ", awemeCreateTime=" + awemeCreateTime +
+                ", videoCoverUrl='" + videoCoverUrl + '\'' +
+                ", videoDynamicCoverUrl='" + videoDynamicCoverUrl + '\'' +
+                ", videoDownloadAddrUrl='" + videoDownloadAddrUrl + '\'' +
+                ", videoShareUrl='" + videoShareUrl + '\'' +
+                ", videoVideoTag='" + videoVideoTag + '\'' +
+                ", videoDuration=" + videoDuration +
+                ", type=" + type +
+                '}';
     }
-
-    public DouyinVideoInfoMessage(Long awemeId, String awemeDesc, Long awemeCreateTime,
-                                  Long authorUid, String videoCoverUrl, String videoDynamicCoverUrl,
-                                  String videoDownloadAddrUrl, String videoShareUrl, String videoVideoTag,
-                                  Long videoDuration, Integer type, Integer status) {
-        this.awemeId = awemeId;
-        this.awemeDesc = awemeDesc;
-        this.awemeCreateTime = awemeCreateTime;
-        this.authorUid = authorUid;
-        this.videoCoverUrl = videoCoverUrl;
-        this.videoDynamicCoverUrl = videoDynamicCoverUrl;
-        this.videoDownloadAddrUrl = videoDownloadAddrUrl;
-        this.videoShareUrl = videoShareUrl;
-        this.videoVideoTag = videoVideoTag;
-        this.videoDuration = videoDuration;
-        this.type = type;
-        this.status = status;
-    }
-
-    public static DouyinVideoInfoMessage of(DouyinWideDataMessage wideDataMessage) {
-        return new DouyinVideoInfoMessageBuilder()
-                .awemeId(wideDataMessage.getAwemeId())
-                .awemeDesc(wideDataMessage.getAwemeDesc())
-                .awemeCreateTime(wideDataMessage.getAwemeCreateTime())
-                .authorUid(wideDataMessage.getAuthorUid())
-                .videoCoverUrl(wideDataMessage.getVideoCoverUrl())
-                .videoDynamicCoverUrl(wideDataMessage.getVideoDynamicCoverUrl())
-                .videoDownloadAddrUrl(wideDataMessage.getVideoDownloadAddrUrl())
-                .videoShareUrl(wideDataMessage.getVideoShareUrl())
-                .videoVideoTag(wideDataMessage.getVideoVideoTag())
-                .videoDuration(wideDataMessage.getVideoDuration())
-                .type(wideDataMessage.getType())
-                .status(wideDataMessage.getStatus())
-                .build();
-    }
-
 
     public static final class DouyinVideoInfoMessageBuilder {
-        public Long awemeId;
-        public String awemeDesc;
-        public Long awemeCreateTime;
-        public Long authorUid;
-        public String videoCoverUrl;
-        public String videoDynamicCoverUrl;
-        public String videoDownloadAddrUrl;
-        public String videoShareUrl;
-        public String videoVideoTag;
-        public Long videoDuration;
-        public Integer type;
-        public Integer status;
+        private Long awemeId;
+        private Long authorUid;
+        private String awemeDesc;
+        private Long awemeCreateTime;
+        private String videoCoverUrl;
+        private String videoDynamicCoverUrl;
+        private String videoDownloadAddrUrl;
+        private String videoShareUrl;
+        private String videoVideoTag;
+        private Long videoDuration;
+        private Integer type;
 
         private DouyinVideoInfoMessageBuilder() {
         }
@@ -131,6 +136,11 @@ public class DouyinVideoInfoMessage implements Messagable {
             return this;
         }
 
+        public DouyinVideoInfoMessageBuilder authorUid(Long authorUid) {
+            this.authorUid = authorUid;
+            return this;
+        }
+
         public DouyinVideoInfoMessageBuilder awemeDesc(String awemeDesc) {
             this.awemeDesc = awemeDesc;
             return this;
@@ -138,11 +148,6 @@ public class DouyinVideoInfoMessage implements Messagable {
 
         public DouyinVideoInfoMessageBuilder awemeCreateTime(Long awemeCreateTime) {
             this.awemeCreateTime = awemeCreateTime;
-            return this;
-        }
-
-        public DouyinVideoInfoMessageBuilder authorUid(Long authorUid) {
-            this.authorUid = authorUid;
             return this;
         }
 
@@ -181,31 +186,8 @@ public class DouyinVideoInfoMessage implements Messagable {
             return this;
         }
 
-        public DouyinVideoInfoMessageBuilder status(Integer status) {
-            this.status = status;
-            return this;
-        }
-
         public DouyinVideoInfoMessage build() {
-            return new DouyinVideoInfoMessage(awemeId, awemeDesc, awemeCreateTime, authorUid, videoCoverUrl, videoDynamicCoverUrl, videoDownloadAddrUrl, videoShareUrl, videoVideoTag, videoDuration, type, status);
+            return new DouyinVideoInfoMessage(awemeId, authorUid, awemeDesc, awemeCreateTime, videoCoverUrl, videoDynamicCoverUrl, videoDownloadAddrUrl, videoShareUrl, videoVideoTag, videoDuration, type);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "DouyinVideoInfoMessage{" +
-                "awemeId=" + awemeId +
-                ", awemeDesc='" + awemeDesc + '\'' +
-                ", awemeCreateTime=" + awemeCreateTime +
-                ", authorUid=" + authorUid +
-                ", videoCoverUrl='" + videoCoverUrl + '\'' +
-                ", videoDynamicCoverUrl='" + videoDynamicCoverUrl + '\'' +
-                ", videoDownloadAddrUrl='" + videoDownloadAddrUrl + '\'' +
-                ", videoShareUrl='" + videoShareUrl + '\'' +
-                ", videoVideoTag='" + videoVideoTag + '\'' +
-                ", videoDuration=" + videoDuration +
-                ", type=" + type +
-                ", status=" + status +
-                '}';
     }
 }

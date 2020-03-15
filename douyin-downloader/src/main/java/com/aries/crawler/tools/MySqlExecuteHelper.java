@@ -3,12 +3,12 @@ package com.aries.crawler.tools;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
-import io.vertx.sqlclient.SqlConnection;
-import io.vertx.sqlclient.Tuple;
+import io.vertx.ext.sql.ResultSet;
+
+import java.util.List;
 
 /**
  * @author arowana
@@ -29,13 +29,25 @@ public class MySqlExecuteHelper {
      * @param arguments sql参数
      * @param handler   回调
      */
-    public static void execute(Vertx vertx, String sql, Tuple arguments, Handler<AsyncResult<RowSet<Row>>> handler) {
+    public static void prepareExecute(Vertx vertx, String sql, List<Object> arguments, Handler<AsyncResult<ResultSet>> handler) {
+        var jdbcClient = MySqlClientHelper.getJDBcClient(vertx);
+        // 构造参数
+        JsonArray params = new JsonArray();
+
+        for (Object argument : arguments) {
+            params.add(argument);
+        }
+
+        // 执行查询
+        jdbcClient.queryWithParams(sql, params, handler);
+    }
+
+    public static void execute(Vertx vertx, String sql, Handler<AsyncResult<ResultSet>> handler) {
         logger.debug("准备执行sql: " + sql);
-        logger.debug("sql args: " + arguments);
-        MySqlClientHelper.getClient(vertx).getConnection(connectionHandlerRes -> {
+        MySqlClientHelper.getJDBcClient(vertx).getConnection(connectionHandlerRes -> {
             if (connectionHandlerRes.succeeded()) {
-                SqlConnection connection = connectionHandlerRes.result();
-                connection.preparedQuery(sql, arguments, handler);
+                var connection = connectionHandlerRes.result();
+                connection.query(sql, handler);
                 connection.close();
             } else {
                 logger.error("Could not connect: " + connectionHandlerRes.cause().getMessage());

@@ -6,10 +6,12 @@ import com.aries.crawler.tools.MySqlExecuteHelper;
 import com.aries.crawler.tools.Orm;
 import com.aries.crawler.trans.message.DouyinWideDataMessage;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.sqlclient.Tuple;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 
@@ -21,27 +23,24 @@ import java.util.function.Supplier;
  */
 public class WideDataPickUpVerticle extends AbstractVerticle {
     private static final Logger logger = LoggerFactory.getLogger(WideDataPickUpVerticle.class);
-
-
-    @Override
-    public void start() {
-        supplier.get();
-    }
-
     private Supplier<Void> supplier = () -> {
         var sql = new SelectBuilder()
                 .column("*")
                 .from(DouyinCrawlerLogModel.TABLE)
                 .where(" status != " + DouyinCrawlerLogModel.STATUS_ALL_DONE)
-                .limit(10L)
+                .limit(100L)
+                .orderBy("ct", false)
                 .toString();
 
-        MySqlExecuteHelper.execute(vertx, sql, Tuple.tuple(), mysqlExecutorRes -> {
+        MySqlExecuteHelper.prepareExecute(vertx, sql, new ArrayList<>(), mysqlExecutorRes -> {
             if (mysqlExecutorRes.succeeded()) {
-                mysqlExecutorRes.result().forEach(row -> {
+                System.out.println("---====" + mysqlExecutorRes.result());
+                List<JsonObject> rows = mysqlExecutorRes.result().getRows();
+
+                for (JsonObject row : rows) {
                     var model = Orm.getModel(row, DouyinCrawlerLogModel.class);
                     processWideData(model);
-                });
+                }
             } else {
                 logger.error(mysqlExecutorRes.cause());
             }
@@ -50,18 +49,23 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
         return null;
     };
 
+    @Override
+    public void start() {
+        supplier.get();
+    }
+
     public void processWideData(DouyinCrawlerLogModel model) {
         if (model == null) {
             // do nothing
             return;
         }
 
-        var douyinUserInfoMessage = DouyinWideDataMessage.of(model);
-        vertx.eventBus().request("logic.widedata.dispatch", douyinUserInfoMessage, reply -> {
+        var douyinWideDataMessage = DouyinWideDataMessage.of(model);
+        vertx.eventBus().request("logic.widedata.dispatch", douyinWideDataMessage, reply -> {
             if (reply.succeeded()) {
-                logger.info("Received reply succeeded. id: " + douyinUserInfoMessage.getId());
+                logger.info("Received reply succeeded. id: " + douyinWideDataMessage.getId());
             } else {
-                logger.error("Received reply failed. id: " + douyinUserInfoMessage.getId());
+                logger.error("Received reply failed. id: " + douyinWideDataMessage.getId());
             }
         });
     }

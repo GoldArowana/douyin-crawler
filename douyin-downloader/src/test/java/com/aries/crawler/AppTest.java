@@ -8,6 +8,8 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.aries.crawler.verticles.DatabaseVerticle.getDateTimeAsString;
+
 public class AppTest {
     @Test
     public void shouldAnswerWithTrue() {
@@ -56,8 +58,7 @@ public class AppTest {
                 .set("uid", 123)
                 .set("short_id", 234234)
                 .set("nickname", "jinlong")
-                .onDuplicateKeyUpdate("ut", LocalDateTime.now())
-                .onDuplicateKeyUpdate("ut", LocalDateTime.now());
+                .onDuplicateKeyUpdate("ut", getDateTimeAsString(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss"));
         String sql = ib.getSql();
         List<Object> values = ib.getValues();
 

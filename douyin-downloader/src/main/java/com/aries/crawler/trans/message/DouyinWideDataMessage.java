@@ -3,7 +3,7 @@ package com.aries.crawler.trans.message;
 import com.aries.crawler.model.douyincrawler.DouyinCrawlerLogModel;
 import com.aries.crawler.trans.Messagable;
 
-import java.time.LocalDateTime;
+import java.math.BigInteger;
 
 /**
  * immutable message, 宽表数据message
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * @author arowana
  */
 public class DouyinWideDataMessage implements Messagable {
-    private final Long id;
+    private final BigInteger id;
     private final Long awemeId;
     private final String awemeDesc;
     private final Long awemeCreateTime;
@@ -29,16 +29,10 @@ public class DouyinWideDataMessage implements Messagable {
     private final Long videoDuration;
     private final Integer type;
     private final Integer status;
-    private final LocalDateTime ct;
-    private final LocalDateTime ut;
+    private final String ct;
+    private final String ut;
 
-    public DouyinWideDataMessage(Long id, Long awemeId, String awemeDesc, Long awemeCreateTime,
-                                 Long authorUid, Long authorShortId, String authorNickname,
-                                 String authorSignature, String avatarLargerUrl,
-                                 String authorShareInfoQrcodeUrl, String videoCoverUrl,
-                                 String videoDynamicCoverUrl, String videoDownloadAddrUrl,
-                                 String videoShareUrl, String videoVideoTag, Long videoDuration,
-                                 Integer type, Integer status, LocalDateTime ct, LocalDateTime ut) {
+    public DouyinWideDataMessage(BigInteger id, Long awemeId, String awemeDesc, Long awemeCreateTime, Long authorUid, Long authorShortId, String authorNickname, String authorSignature, String avatarLargerUrl, String authorShareInfoQrcodeUrl, String videoCoverUrl, String videoDynamicCoverUrl, String videoDownloadAddrUrl, String videoShareUrl, String videoVideoTag, Long videoDuration, Integer type, Integer status, String ct, String ut) {
         this.id = id;
         this.awemeId = awemeId;
         this.awemeDesc = awemeDesc;
@@ -61,7 +55,32 @@ public class DouyinWideDataMessage implements Messagable {
         this.ut = ut;
     }
 
-    public Long getId() {
+    public static DouyinWideDataMessage of(DouyinCrawlerLogModel douyinCrawlerLogModel) {
+        return new DouyinWideDataMessageBuilder()
+                .id(douyinCrawlerLogModel.getId())
+                .awemeId(douyinCrawlerLogModel.getAwemeId())
+                .awemeDesc(douyinCrawlerLogModel.getAwemeDesc())
+                .awemeCreateTime(douyinCrawlerLogModel.getAwemeCreateTime())
+                .authorUid(douyinCrawlerLogModel.getAuthorUid())
+                .authorShortId(douyinCrawlerLogModel.getAuthorShortId())
+                .authorNickname(douyinCrawlerLogModel.getAuthorNickname())
+                .authorSignature(douyinCrawlerLogModel.getAuthorSignature())
+                .avatarLargerUrl(douyinCrawlerLogModel.getAvatarLargerUrl())
+                .authorShareInfoQrcodeUrl(douyinCrawlerLogModel.getAuthorShareInfoQrcodeUrl())
+                .videoCoverUrl(douyinCrawlerLogModel.getVideoCoverUrl())
+                .videoDynamicCoverUrl(douyinCrawlerLogModel.getVideoDynamicCoverUrl())
+                .videoDownloadAddrUrl(douyinCrawlerLogModel.getVideoDownloadAddrUrl())
+                .videoShareUrl(douyinCrawlerLogModel.getVideoShareUrl())
+                .videoVideoTag(douyinCrawlerLogModel.getVideoVideoTag())
+                .videoDuration(douyinCrawlerLogModel.getVideoDuration())
+                .type(douyinCrawlerLogModel.getType())
+                .status(douyinCrawlerLogModel.getStatus())
+                .ct(douyinCrawlerLogModel.getCt())
+                .ut(douyinCrawlerLogModel.getUt())
+                .build();
+    }
+
+    public BigInteger getId() {
         return id;
     }
 
@@ -133,61 +152,61 @@ public class DouyinWideDataMessage implements Messagable {
         return status;
     }
 
-    public LocalDateTime getCt() {
+    public String getCt() {
         return ct;
     }
 
-    public LocalDateTime getUt() {
+    public String getUt() {
         return ut;
     }
 
-    public static DouyinWideDataMessage of(DouyinCrawlerLogModel douyinCrawlerLogModel) {
-        return new DouyinWideDataMessageBuilder()
-                .id(douyinCrawlerLogModel.getId())
-                .awemeId(douyinCrawlerLogModel.getAwemeId())
-                .awemeDesc(douyinCrawlerLogModel.getAwemeDesc())
-                .awemeCreateTime(douyinCrawlerLogModel.getAwemeCreateTime())
-                .authorUid(douyinCrawlerLogModel.getAuthorUid())
-                .authorShortId(douyinCrawlerLogModel.getAuthorShortId())
-                .authorNickname(douyinCrawlerLogModel.getAuthorNickname())
-                .authorSignature(douyinCrawlerLogModel.getAuthorSignature())
-                .avatarLargerUrl(douyinCrawlerLogModel.getAvatarLargerUrl())
-                .authorShareInfoQrcodeUrl(douyinCrawlerLogModel.getAuthorShareInfoQrcodeUrl())
-                .videoCoverUrl(douyinCrawlerLogModel.getVideoCoverUrl())
-                .videoDynamicCoverUrl(douyinCrawlerLogModel.getVideoDynamicCoverUrl())
-                .videoDownloadAddrUrl(douyinCrawlerLogModel.getVideoDownloadAddrUrl())
-                .videoShareUrl(douyinCrawlerLogModel.getVideoShareUrl())
-                .videoVideoTag(douyinCrawlerLogModel.getVideoVideoTag())
-                .videoDuration(douyinCrawlerLogModel.getVideoDuration())
-                .type(douyinCrawlerLogModel.getType())
-                .status(douyinCrawlerLogModel.getStatus())
-                .ct(douyinCrawlerLogModel.getCt())
-                .ut(douyinCrawlerLogModel.getUt())
-                .build();
+    @Override
+    public String toString() {
+        return "DouyinWideDataMessage{" +
+                "id=" + id +
+                ", awemeId=" + awemeId +
+                ", awemeDesc='" + awemeDesc + '\'' +
+                ", awemeCreateTime=" + awemeCreateTime +
+                ", authorUid=" + authorUid +
+                ", authorShortId=" + authorShortId +
+                ", authorNickname='" + authorNickname + '\'' +
+                ", authorSignature='" + authorSignature + '\'' +
+                ", avatarLargerUrl='" + avatarLargerUrl + '\'' +
+                ", authorShareInfoQrcodeUrl='" + authorShareInfoQrcodeUrl + '\'' +
+                ", videoCoverUrl='" + videoCoverUrl + '\'' +
+                ", videoDynamicCoverUrl='" + videoDynamicCoverUrl + '\'' +
+                ", videoDownloadAddrUrl='" + videoDownloadAddrUrl + '\'' +
+                ", videoShareUrl='" + videoShareUrl + '\'' +
+                ", videoVideoTag='" + videoVideoTag + '\'' +
+                ", videoDuration=" + videoDuration +
+                ", type=" + type +
+                ", status=" + status +
+                ", ct=" + ct +
+                ", ut=" + ut +
+                '}';
     }
 
-
     public static final class DouyinWideDataMessageBuilder {
-        public Long awemeId;
-        public String awemeDesc;
-        public Long awemeCreateTime;
-        public Long authorUid;
-        public Long authorShortId;
-        public String authorNickname;
-        public String authorSignature;
-        public String avatarLargerUrl;
-        public String authorShareInfoQrcodeUrl;
-        public String videoCoverUrl;
-        public String videoDynamicCoverUrl;
-        public String videoDownloadAddrUrl;
-        public String videoShareUrl;
-        public String videoVideoTag;
-        public Long videoDuration;
-        public Integer type;
-        public Integer status;
-        public LocalDateTime ct;
-        public LocalDateTime ut;
-        private Long id;
+        private BigInteger id;
+        private Long awemeId;
+        private String awemeDesc;
+        private Long awemeCreateTime;
+        private Long authorUid;
+        private Long authorShortId;
+        private String authorNickname;
+        private String authorSignature;
+        private String avatarLargerUrl;
+        private String authorShareInfoQrcodeUrl;
+        private String videoCoverUrl;
+        private String videoDynamicCoverUrl;
+        private String videoDownloadAddrUrl;
+        private String videoShareUrl;
+        private String videoVideoTag;
+        private Long videoDuration;
+        private Integer type;
+        private Integer status;
+        private String ct;
+        private String ut;
 
         private DouyinWideDataMessageBuilder() {
         }
@@ -196,7 +215,7 @@ public class DouyinWideDataMessage implements Messagable {
             return new DouyinWideDataMessageBuilder();
         }
 
-        public DouyinWideDataMessageBuilder id(Long id) {
+        public DouyinWideDataMessageBuilder id(BigInteger id) {
             this.id = id;
             return this;
         }
@@ -286,12 +305,12 @@ public class DouyinWideDataMessage implements Messagable {
             return this;
         }
 
-        public DouyinWideDataMessageBuilder ct(LocalDateTime ct) {
+        public DouyinWideDataMessageBuilder ct(String ct) {
             this.ct = ct;
             return this;
         }
 
-        public DouyinWideDataMessageBuilder ut(LocalDateTime ut) {
+        public DouyinWideDataMessageBuilder ut(String ut) {
             this.ut = ut;
             return this;
         }
@@ -299,31 +318,5 @@ public class DouyinWideDataMessage implements Messagable {
         public DouyinWideDataMessage build() {
             return new DouyinWideDataMessage(id, awemeId, awemeDesc, awemeCreateTime, authorUid, authorShortId, authorNickname, authorSignature, avatarLargerUrl, authorShareInfoQrcodeUrl, videoCoverUrl, videoDynamicCoverUrl, videoDownloadAddrUrl, videoShareUrl, videoVideoTag, videoDuration, type, status, ct, ut);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "DouyinWideDataMessage{" +
-                "id=" + id +
-                ", awemeId=" + awemeId +
-                ", awemeDesc='" + awemeDesc + '\'' +
-                ", awemeCreateTime=" + awemeCreateTime +
-                ", authorUid=" + authorUid +
-                ", authorShortId=" + authorShortId +
-                ", authorNickname='" + authorNickname + '\'' +
-                ", authorSignature='" + authorSignature + '\'' +
-                ", avatarLargerUrl='" + avatarLargerUrl + '\'' +
-                ", authorShareInfoQrcodeUrl='" + authorShareInfoQrcodeUrl + '\'' +
-                ", videoCoverUrl='" + videoCoverUrl + '\'' +
-                ", videoDynamicCoverUrl='" + videoDynamicCoverUrl + '\'' +
-                ", videoDownloadAddrUrl='" + videoDownloadAddrUrl + '\'' +
-                ", videoShareUrl='" + videoShareUrl + '\'' +
-                ", videoVideoTag='" + videoVideoTag + '\'' +
-                ", videoDuration=" + videoDuration +
-                ", type=" + type +
-                ", status=" + status +
-                ", ct=" + ct +
-                ", ut=" + ut +
-                '}';
     }
 }

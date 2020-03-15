@@ -8,20 +8,18 @@ import com.aries.crawler.trans.Messagable;
  * @author arowana
  */
 public class CommonResponseMessage<T> implements Messagable {
-    private final Integer code;
-    private final T message;
-
     public static final CommonResponseMessage<Object> COMMON_SUCCESS_MESSAGE = CommonResponseMessage.CommonResponseMessageBuilder
             .aCommonResponseMessage()
             .code(100)
             .message("success")
             .build();
-
     public static final CommonResponseMessage<Object> COMMON_FAILED_MESSAGE = CommonResponseMessage.CommonResponseMessageBuilder
             .aCommonResponseMessage()
             .code(1000)
             .message("failed")
             .build();
+    private final Integer code;
+    private final T message;
 
     public CommonResponseMessage(Integer code, T message) {
         this.code = code;
@@ -36,6 +34,13 @@ public class CommonResponseMessage<T> implements Messagable {
         return message;
     }
 
+    @Override
+    public String toString() {
+        return "CommonResponseMessage{" +
+                "code=" + code +
+                ", message=" + message +
+                '}';
+    }
 
     public static final class CommonResponseMessageBuilder<T> {
         private Integer code;
@@ -61,13 +66,5 @@ public class CommonResponseMessage<T> implements Messagable {
         public CommonResponseMessage<T> build() {
             return new CommonResponseMessage<>(code, message);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "CommonResponseMessage{" +
-                "code=" + code +
-                ", message=" + message +
-                '}';
     }
 }

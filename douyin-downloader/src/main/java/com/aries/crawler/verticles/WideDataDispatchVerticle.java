@@ -1,12 +1,14 @@
 package com.aries.crawler.verticles;
 
 import com.aries.crawler.model.douyincrawler.DouyinCrawlerLogModel;
-import com.aries.crawler.trans.message.DouyinUserInfoMessage;
-import com.aries.crawler.trans.message.DouyinWideDataMessage;
+import com.aries.crawler.trans.message.*;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+
+import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_FAILED_MESSAGE;
+import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_SUCCESS_MESSAGE;
 
 /**
  * 这个verticle的职责是：
@@ -32,24 +34,59 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
 
         // 如果 用户部分的数据 未处于已处理状态
         if ((wideDataMessage.getStatus() & DouyinCrawlerLogModel.STATUS_USER_DONE) == 0) {
+            logger.info("user not done :" + wideDataMessage.getAuthorUid());
             var douyinUserInfoMessage = DouyinUserInfoMessage.of(wideDataMessage);
-            vertx.eventBus().request("mysql.douyin_user.insert", douyinUserInfoMessage, reply -> {
-                if (reply.succeeded()) {
+            vertx.eventBus().request("mysql.douyin_user.insert", douyinUserInfoMessage, insertReply -> {
+                if (insertReply.succeeded()) {
                     logger.info("Received reply succeeded, uid: " + douyinUserInfoMessage.getUid());
+                    message.reply(COMMON_SUCCESS_MESSAGE);
+
+
+                    var replyMessage = (CommonResponseMessage) insertReply.result().body();
+                    logger.info("reply message user:" + replyMessage.getCode());
+                    if (replyMessage.getCode() == 100) {
+                        var idMessage = new SimpleInt64Message(wideDataMessage.getId());
+                        vertx.eventBus().request("mysql.douyin_widedata.update.status.user", idMessage, updateReply -> {
+                            if (updateReply.succeeded()) {
+                                logger.info("update status user succ ...");
+                            } else {
+                                logger.info("update status user fail ...");
+                            }
+                        });
+                    }
                 } else {
                     logger.error("Received reply failed, uid: " + douyinUserInfoMessage.getUid());
+                    message.reply(COMMON_FAILED_MESSAGE);
                 }
             });
         }
 
         // 如果 视频部分的数据 未处于已处理状态
         if ((wideDataMessage.getStatus() & DouyinCrawlerLogModel.STATUS_VIDEO_DONE) == 0) {
-            var douyinUserInfoMessage = DouyinUserInfoMessage.of(wideDataMessage);
-            vertx.eventBus().request("mysql.douyin_video.insert", douyinUserInfoMessage, reply -> {
+            logger.info("video not done :" + wideDataMessage.getAwemeId());
+
+            var douyinVideoInfoMessage = DouyinVideoInfoMessage.of(wideDataMessage);
+            vertx.eventBus().request("mysql.douyin_video.insert", douyinVideoInfoMessage, reply -> {
                 if (reply.succeeded()) {
-                    logger.info("Received reply succeeded, uid: " + douyinUserInfoMessage.getUid());
+                    logger.info("Received reply succeeded, awemeid: " + douyinVideoInfoMessage.getAwemeId());
+                    message.reply(COMMON_SUCCESS_MESSAGE);
+
+
+                    var replyMessage = (CommonResponseMessage) reply.result().body();
+                    logger.info("reply message video:" + replyMessage.getCode());
+                    if (replyMessage.getCode() == 100) {
+                        var idMessage = new SimpleInt64Message(wideDataMessage.getId());
+                        vertx.eventBus().request("mysql.douyin_widedata.update.status.video", idMessage, updateReply -> {
+                            if (updateReply.succeeded()) {
+                                logger.info("update status video succ ...");
+                            } else {
+                                logger.info("update status video fail ...");
+                            }
+                        });
+                    }
                 } else {
-                    logger.error("Received reply failed, uid: " + douyinUserInfoMessage.getUid());
+                    logger.error("Received reply failed, awemeid: " + douyinVideoInfoMessage.getAwemeId());
+                    message.reply(COMMON_FAILED_MESSAGE);
                 }
             });
         }

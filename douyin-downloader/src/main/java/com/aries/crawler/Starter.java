@@ -1,9 +1,7 @@
 package com.aries.crawler;
 
 import com.aries.crawler.trans.codec.CommonMessageCodec;
-import com.aries.crawler.trans.message.CommonResponseMessage;
-import com.aries.crawler.trans.message.DouyinUserInfoMessage;
-import com.aries.crawler.trans.message.DouyinWideDataMessage;
+import com.aries.crawler.trans.message.*;
 import com.aries.crawler.verticles.DatabaseVerticle;
 import com.aries.crawler.verticles.WideDataDispatchVerticle;
 import com.aries.crawler.verticles.WideDataPickUpVerticle;
@@ -28,7 +26,9 @@ public class Starter {
         var vertx = Vertx.vertx();
 
         // 注册解码器
+        vertx.eventBus().registerDefaultCodec(SimpleInt64Message.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinUserInfoMessage.class, new CommonMessageCodec<>());
+        vertx.eventBus().registerDefaultCodec(DouyinVideoInfoMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinWideDataMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(CommonResponseMessage.class, new CommonMessageCodec<>());
 

@@ -1,9 +1,8 @@
 package com.aries.crawler.tools;
 
 import io.vertx.core.Vertx;
-import io.vertx.mysqlclient.MySQLConnectOptions;
-import io.vertx.mysqlclient.MySQLPool;
-import io.vertx.sqlclient.PoolOptions;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.jdbc.JDBCClient;
 
 /**
  * 用于获取mysql客户端、连接池
@@ -11,7 +10,7 @@ import io.vertx.sqlclient.PoolOptions;
  * @author arowana
  */
 public class MySqlClientHelper {
-    private static volatile MySQLPool singletonMySQLPool;
+    private static volatile JDBCClient jdbcClient;
 
     /**
      * 防止实例化
@@ -25,28 +24,20 @@ public class MySqlClientHelper {
      * @param vertx 全局vertx
      * @return 数据库连接池
      */
-    public static MySQLPool getClient(Vertx vertx) {
-        if (singletonMySQLPool == null) {
+    public static JDBCClient getJDBcClient(Vertx vertx) {
+        if (jdbcClient == null) {
             synchronized (MySqlClientHelper.class) {
-                if (singletonMySQLPool == null) {
-                    var connectOptions = new MySQLConnectOptions()
-                            .setPort(3306)
-                            .setHost("localhost")
-                            .setDatabase("douyin_crawler")
-                            .setUser("root")
-                            .setPassword("1qaz2wsx")
-                            .setCachePreparedStatements(true)
-                            .setPreparedStatementCacheMaxSize(100000);
-
-                    var poolOptions = new PoolOptions()
-                            .setMaxSize(20);
-
-                    singletonMySQLPool = MySQLPool.pool(vertx, connectOptions, poolOptions);
+                if (jdbcClient == null) {
+                    JsonObject dbConfig = new JsonObject();
+                    dbConfig.put("url", "jdbc:mysql://localhost:3306/douyin_crawler");
+                    dbConfig.put("driver_class", "com.mysql.jdbc.Driver");
+                    dbConfig.put("user", "root");
+                    dbConfig.put("password", "1qaz2wsx");
+                    jdbcClient = JDBCClient.createShared(vertx, dbConfig);
                 }
             }
         }
-        return singletonMySQLPool;
+        return jdbcClient;
     }
-
 
 }

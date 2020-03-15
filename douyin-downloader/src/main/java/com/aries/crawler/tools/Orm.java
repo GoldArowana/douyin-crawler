@@ -3,9 +3,9 @@ package com.aries.crawler.tools;
 import com.aries.crawler.annotation.MysqlField;
 import com.aries.crawler.model.DataModelable;
 import com.aries.crawler.verticles.WideDataPickUpVerticle;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.sqlclient.Row;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -46,7 +46,7 @@ public class Orm {
      * @param <T>   继承DataModel的某个类
      * @return 返回clazz类型的一个实例
      */
-    public static <T extends DataModelable> T getModel(Row row, Class<T> clazz) {
+    public static <T extends DataModelable> T getModel(JsonObject row, Class<T> clazz) {
         try {
             // 反射获取clazz的构造器
             Constructor<? extends T> constructor = clazz.getConstructor();
@@ -60,14 +60,7 @@ public class Orm {
                     dataModelField.setAccessible(true);
                     MysqlField annotation = dataModelField.getAnnotation(MysqlField.class);
                     if (annotation != null) {
-                        // 根据表中字段名获取所在第几列
-                        int columnIndex = row.getColumnIndex(annotation.alias());
-                        if (columnIndex < 0) {
-                            logger.error("index less than 0, ", annotation.alias());
-                            continue;
-                        }
-                        // 根据类型和列, 获取值
-                        Object columnValue = row.get(annotation.type(), columnIndex);
+                        Object columnValue = row.getValue(annotation.alias());
                         // 将值反射到dataModel里
                         dataModelField.set(dataModel, columnValue);
                     }

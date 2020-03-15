@@ -17,6 +17,28 @@ public class DouyinUserInfoMessage implements Messagable {
     private final String shareUrl;
     private final String shareInfoQrCodeUrl;
 
+    public DouyinUserInfoMessage(Long uid, Long shortId, String nickname, String signature, String avatarLargerUrl, String shareUrl, String shareInfoQrCodeUrl) {
+        this.uid = uid;
+        this.shortId = shortId;
+        this.nickname = nickname;
+        this.signature = signature;
+        this.avatarLargerUrl = avatarLargerUrl;
+        this.shareUrl = shareUrl;
+        this.shareInfoQrCodeUrl = shareInfoQrCodeUrl;
+    }
+
+    public static DouyinUserInfoMessage of(DouyinWideDataMessage wideDataMessage) {
+        return new DouyinUserInfoMessageBuilder()
+                .uid(wideDataMessage.getAuthorUid())
+                .shortId(wideDataMessage.getAuthorShortId())
+                .nickname(wideDataMessage.getAuthorNickname())
+                .signature(wideDataMessage.getAuthorSignature())
+                .avatarLargerUrl(wideDataMessage.getAvatarLargerUrl())
+                .shareUrl(Urls.getUserSharePage(wideDataMessage.getAuthorUid()))
+                .shareInfoQrCodeUrl(wideDataMessage.getAuthorShareInfoQrcodeUrl())
+                .build();
+    }
+
     public Long getUid() {
         return uid;
     }
@@ -45,35 +67,19 @@ public class DouyinUserInfoMessage implements Messagable {
         return shareInfoQrCodeUrl;
     }
 
-    public DouyinUserInfoMessage(Long uid, Long shortId, String nickname,
-                                 String signature, String avatarLargerUrl,
-                                 String shareUrl, String shareInfoQrCodeUrl) {
-        this.uid = uid;
-        this.shortId = shortId;
-        this.nickname = nickname;
-        this.signature = signature;
-        this.avatarLargerUrl = avatarLargerUrl;
-        this.shareUrl = shareUrl;
-        this.shareInfoQrCodeUrl = shareInfoQrCodeUrl;
+    @Override
+    public String toString() {
+        return "DouyinUserInfoMessage{" +
+                "uid=" + uid +
+                ", shortId=" + shortId +
+                ", nickname='" + nickname + '\'' +
+                ", signature='" + signature + '\'' +
+                ", avatarLargerUrl='" + avatarLargerUrl + '\'' +
+                ", shareUrl='" + shareUrl + '\'' +
+                ", shareInfoQrCodeUrl='" + shareInfoQrCodeUrl + '\'' +
+                '}';
     }
 
-
-    public static DouyinUserInfoMessage of(DouyinWideDataMessage wideDataMessage) {
-        return new DouyinUserInfoMessageBuilder()
-                .uid(wideDataMessage.getAuthorUid())
-                .shortId(wideDataMessage.getAuthorShortId())
-                .nickname(wideDataMessage.getAuthorNickname())
-                .signature(wideDataMessage.getAuthorSignature())
-                .avatarLargerUrl(wideDataMessage.getAvatarLargerUrl())
-                .shareUrl(Urls.getUserSharePage(wideDataMessage.getAuthorUid()))
-                .shareInfoQrCodeUrl(wideDataMessage.getAuthorShareInfoQrcodeUrl())
-                .build();
-    }
-
-
-    /**
-     * inner builder for DouyinUserInfoMessage
-     */
     public static final class DouyinUserInfoMessageBuilder {
         private Long uid;
         private Long shortId;
@@ -128,18 +134,5 @@ public class DouyinUserInfoMessage implements Messagable {
         public DouyinUserInfoMessage build() {
             return new DouyinUserInfoMessage(uid, shortId, nickname, signature, avatarLargerUrl, shareUrl, shareInfoQrCodeUrl);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "DouyinUserInfoMessage{" +
-                "uid=" + uid +
-                ", shortId=" + shortId +
-                ", nickname='" + nickname + '\'' +
-                ", signature='" + signature + '\'' +
-                ", avatarLargerUrl='" + avatarLargerUrl + '\'' +
-                ", shareUrl='" + shareUrl + '\'' +
-                ", shareInfoQrCodeUrl='" + shareInfoQrCodeUrl + '\'' +
-                '}';
     }
 }

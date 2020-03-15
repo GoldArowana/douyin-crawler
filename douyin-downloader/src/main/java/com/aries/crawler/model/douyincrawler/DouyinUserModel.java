@@ -33,10 +33,10 @@ public class DouyinUserModel implements DataModelable {
     public String shareInfoQrCodeUrl;
 
     @MysqlField(alias = "ct", type = LocalDateTime.class)
-    public LocalDateTime ct;
+    public String ct;
 
     @MysqlField(alias = "ut", type = LocalDateTime.class)
-    public LocalDateTime ut;
+    public String ut;
 
     public Long getUid() {
         return uid;
@@ -94,19 +94,19 @@ public class DouyinUserModel implements DataModelable {
         this.shareInfoQrCodeUrl = shareInfoQrCodeUrl;
     }
 
-    public LocalDateTime getCt() {
+    public String getCt() {
         return ct;
     }
 
-    public void setCt(LocalDateTime ct) {
+    public void setCt(String ct) {
         this.ct = ct;
     }
 
-    public LocalDateTime getUt() {
+    public String getUt() {
         return ut;
     }
 
-    public void setUt(LocalDateTime ut) {
+    public void setUt(String ut) {
         this.ut = ut;
     }
 

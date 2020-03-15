@@ -3,7 +3,7 @@ package com.aries.crawler.model.douyincrawler;
 import com.aries.crawler.annotation.MysqlField;
 import com.aries.crawler.model.DataModelable;
 
-import java.time.LocalDateTime;
+import java.math.BigInteger;
 
 /**
  * 抖音数据宽表
@@ -27,72 +27,68 @@ public class DouyinCrawlerLogModel implements DataModelable {
     public static final Integer STATUS_ALL_DONE = 3;
 
     public static final String TABLE = "douyin_crawler_log";
-
-    @MysqlField(alias = "id", type = Long.class)
-    private Long id;
-
     @MysqlField(alias = "aweme_id", type = Long.class)
     public Long awemeId;
-
     @MysqlField(alias = "aweme_desc", type = String.class)
     public String awemeDesc;
-
     @MysqlField(alias = "aweme_create_time", type = Long.class)
     public Long awemeCreateTime;
-
     @MysqlField(alias = "author_uid", type = Long.class)
     public Long authorUid;
-
     @MysqlField(alias = "author_short_id", type = Long.class)
     public Long authorShortId;
-
     @MysqlField(alias = "author_nickname", type = String.class)
     public String authorNickname;
-
     @MysqlField(alias = "author_signature", type = String.class)
     public String authorSignature;
-
     @MysqlField(alias = "avatar_larger_url", type = String.class)
     public String avatarLargerUrl;
-
     @MysqlField(alias = "author_share_info_qrcode_url", type = String.class)
     public String authorShareInfoQrcodeUrl;
-
     @MysqlField(alias = "video_cover_url", type = String.class)
     public String videoCoverUrl;
-
     @MysqlField(alias = "video_dynamic_cover_url", type = String.class)
     public String videoDynamicCoverUrl;
-
     @MysqlField(alias = "video_download_addr_url", type = String.class)
     public String videoDownloadAddrUrl;
-
     @MysqlField(alias = "video_share_url", type = String.class)
     public String videoShareUrl;
-
     @MysqlField(alias = "video_tag", type = String.class)
     public String videoVideoTag;
-
-    @MysqlField(alias = "video_duration", type = Long.class)
+    @MysqlField(alias = "video_duration", type = BigInteger.class)
     public Long videoDuration;
-
     @MysqlField(alias = "type", type = Integer.class)
     public Integer type;
-
     @MysqlField(alias = "status", type = Integer.class)
     public Integer status;
+    @MysqlField(alias = "ct", type = String.class)
+    public String ct;
+    @MysqlField(alias = "ut", type = String.class)
+    public String ut;
+    @MysqlField(alias = "id", type = BigInteger.class)
+    private BigInteger id;
 
-    @MysqlField(alias = "ct", type = LocalDateTime.class)
-    public LocalDateTime ct;
+    public static Integer getStatusUserDone() {
+        return STATUS_USER_DONE;
+    }
 
-    @MysqlField(alias = "ut", type = LocalDateTime.class)
-    public LocalDateTime ut;
+    public static Integer getStatusVideoDone() {
+        return STATUS_VIDEO_DONE;
+    }
 
-    public Long getId() {
+    public static Integer getStatusAllDone() {
+        return STATUS_ALL_DONE;
+    }
+
+    public static String getTABLE() {
+        return TABLE;
+    }
+
+    public BigInteger getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(BigInteger id) {
         this.id = id;
     }
 
@@ -232,25 +228,25 @@ public class DouyinCrawlerLogModel implements DataModelable {
         this.status = status;
     }
 
-    public LocalDateTime getCt() {
+    public String getCt() {
         return ct;
     }
 
-    public void setCt(LocalDateTime ct) {
+    public void setCt(String ct) {
         this.ct = ct;
     }
 
-    public LocalDateTime getUt() {
+    public String getUt() {
         return ut;
     }
 
-    public void setUt(LocalDateTime ut) {
+    public void setUt(String ut) {
         this.ut = ut;
     }
 
     @Override
     public String toString() {
-        return "DouYinCrawlerLogModel{" +
+        return "DouyinCrawlerLogModel{" +
                 "id=" + id +
                 ", awemeId=" + awemeId +
                 ", awemeDesc='" + awemeDesc + '\'' +
