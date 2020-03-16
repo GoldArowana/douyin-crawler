@@ -22,29 +22,29 @@ public class Starter {
         // Force to use slf4j. 参考自dgate：https://github.com/DTeam-Top/dgate/blob/master/src/main/java/top/dteam/dgate/Launcher.java
         System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
 
-        // 全局vertx
+        logger.info("全局vert.x");
         var vertx = Vertx.vertx();
 
-        // 注册解码器
+        logger.info("注册解码器");
         vertx.eventBus().registerDefaultCodec(SimpleInt64Message.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinUserInfoMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinVideoInfoMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinWideDataMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(CommonResponseMessage.class, new CommonMessageCodec<>());
 
-        // 部署 宽表读取器
+        logger.info("部署 宽表读取器");
         var wideDataPickUpFuture = simpleDeploy(vertx, WideDataPickUpVerticle.class);
-        // 部署 宽表数据派发器
+        logger.info("部署 宽表数据派发器");
         var wideDataDispatchFuture = optionalDeploy(vertx, WideDataDispatchVerticle.class, 5);
-        // 部署 数据处理器
+        logger.info("部署 数据处理器");
         var databaseFuture = optionalDeploy(vertx, DatabaseVerticle.class, 5);
 
-        // 检查三个verticle是否都部署成功
+        logger.info("检查三个verticle是否都部署成功");
         CompositeFuture.all(wideDataPickUpFuture, databaseFuture, wideDataDispatchFuture).setHandler(ar -> {
             if (ar.succeeded()) {
                 logger.info("所有Verticle启动完成");
             } else {
-                logger.error("至少一个服务器启动失败:{}", ar.cause());
+                logger.error("至少有一个服务器启动失败: " + ar.cause());
             }
         });
     }

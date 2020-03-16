@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static com.aries.crawler.trans.EventBusTopic.LOGIC_WIDEDATA_DISPATCH;
+
 
 /**
  * 这个verticle的职责是：
@@ -23,6 +25,7 @@ import java.util.function.Supplier;
  */
 public class WideDataPickUpVerticle extends AbstractVerticle {
     private static final Logger logger = LoggerFactory.getLogger(WideDataPickUpVerticle.class);
+
     private Supplier<Void> supplier = () -> {
         var sql = new SelectBuilder()
                 .column("*")
@@ -32,17 +35,16 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
                 .orderBy("ct", false)
                 .toString();
 
+        logger.info("构建pick up sql: " + sql);
         MySqlExecuteHelper.prepareExecute(vertx, sql, new ArrayList<>(), mysqlExecutorRes -> {
             if (mysqlExecutorRes.succeeded()) {
-                System.out.println("---====" + mysqlExecutorRes.result());
                 List<JsonObject> rows = mysqlExecutorRes.result().getRows();
-
                 for (JsonObject row : rows) {
                     var model = Orm.getModel(row, DouyinCrawlerLogModel.class);
                     processWideData(model);
                 }
             } else {
-                logger.error(mysqlExecutorRes.cause());
+                logger.error("execute pick up sql failed: " + mysqlExecutorRes.cause());
             }
         });
 
@@ -56,16 +58,16 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
 
     public void processWideData(DouyinCrawlerLogModel model) {
         if (model == null) {
-            // do nothing
+            logger.info("model is null, do nothing");
             return;
         }
 
         var douyinWideDataMessage = DouyinWideDataMessage.of(model);
-        vertx.eventBus().request("logic.widedata.dispatch", douyinWideDataMessage, reply -> {
+        vertx.eventBus().request(LOGIC_WIDEDATA_DISPATCH.getTopic(), douyinWideDataMessage, reply -> {
             if (reply.succeeded()) {
-                logger.info("Received reply succeeded. id: " + douyinWideDataMessage.getId());
+                logger.info("Received reply from dispatch succeeded. wide data id: " + douyinWideDataMessage.getId());
             } else {
-                logger.error("Received reply failed. id: " + douyinWideDataMessage.getId());
+                logger.error("Received reply from dispatch failed. wide data id: " + douyinWideDataMessage.getId() + ". cause" + reply.cause());
             }
         });
     }

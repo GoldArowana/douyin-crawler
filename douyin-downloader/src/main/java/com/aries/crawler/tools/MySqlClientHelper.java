@@ -32,7 +32,7 @@ public class MySqlClientHelper {
                     dbConfig.put("url", "jdbc:mysql://localhost:3306/douyin_crawler");
                     dbConfig.put("driver_class", "com.mysql.jdbc.Driver");
                     dbConfig.put("user", "root");
-                    dbConfig.put("password", "1qaz2wsx");
+                    dbConfig.put("password", "1qaz2wsx"); // 反正是localhost, 密码随便看
                     jdbcClient = JDBCClient.createShared(vertx, dbConfig);
                 }
             }

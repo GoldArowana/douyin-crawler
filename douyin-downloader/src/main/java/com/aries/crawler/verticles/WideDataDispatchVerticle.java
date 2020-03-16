@@ -7,6 +7,7 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
+import static com.aries.crawler.trans.EventBusTopic.*;
 import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_FAILED_MESSAGE;
 import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_SUCCESS_MESSAGE;
 
@@ -25,7 +26,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        vertx.eventBus().consumer("logic.widedata.dispatch", this::dispatch);
+        vertx.eventBus().consumer(LOGIC_WIDEDATA_DISPATCH.getTopic(), this::dispatch);
     }
 
     private void dispatch(Message<Object> message) {
@@ -36,7 +37,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
         if ((wideDataMessage.getStatus() & DouyinCrawlerLogModel.STATUS_USER_DONE) == 0) {
             logger.info("user not done :" + wideDataMessage.getAuthorUid());
             var douyinUserInfoMessage = DouyinUserInfoMessage.of(wideDataMessage);
-            vertx.eventBus().request("mysql.douyin_user.insert", douyinUserInfoMessage, insertReply -> {
+            vertx.eventBus().request(MYSQL_DOUYIN_USER_INSERT.getTopic(), douyinUserInfoMessage, insertReply -> {
                 if (insertReply.succeeded()) {
                     logger.info("Received reply succeeded, uid: " + douyinUserInfoMessage.getUid());
                     message.reply(COMMON_SUCCESS_MESSAGE);
@@ -46,7 +47,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
                     logger.info("reply message user:" + replyMessage.getCode());
                     if (replyMessage.getCode() == 100) {
                         var idMessage = new SimpleInt64Message(wideDataMessage.getId());
-                        vertx.eventBus().request("mysql.douyin_widedata.update.status.user", idMessage, updateReply -> {
+                        vertx.eventBus().request(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_USER.getTopic(), idMessage, updateReply -> {
                             if (updateReply.succeeded()) {
                                 logger.info("update status user succ ...");
                             } else {
@@ -66,7 +67,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
             logger.info("video not done :" + wideDataMessage.getAwemeId());
 
             var douyinVideoInfoMessage = DouyinVideoInfoMessage.of(wideDataMessage);
-            vertx.eventBus().request("mysql.douyin_video.insert", douyinVideoInfoMessage, reply -> {
+            vertx.eventBus().request(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), douyinVideoInfoMessage, reply -> {
                 if (reply.succeeded()) {
                     logger.info("Received reply succeeded, awemeid: " + douyinVideoInfoMessage.getAwemeId());
                     message.reply(COMMON_SUCCESS_MESSAGE);
@@ -76,7 +77,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
                     logger.info("reply message video:" + replyMessage.getCode());
                     if (replyMessage.getCode() == 100) {
                         var idMessage = new SimpleInt64Message(wideDataMessage.getId());
-                        vertx.eventBus().request("mysql.douyin_widedata.update.status.video", idMessage, updateReply -> {
+                        vertx.eventBus().request(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_VIDEO.getTopic(), idMessage, updateReply -> {
                             if (updateReply.succeeded()) {
                                 logger.info("update status video succ ...");
                             } else {

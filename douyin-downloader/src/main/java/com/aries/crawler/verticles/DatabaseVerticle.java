@@ -14,6 +14,7 @@ import io.vertx.core.logging.LoggerFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.aries.crawler.trans.EventBusTopic.*;
 import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_FAILED_MESSAGE;
 import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_SUCCESS_MESSAGE;
 
@@ -31,13 +32,13 @@ public class DatabaseVerticle extends AbstractVerticle {
     @Override
     public void start() {
         // 用于插入用户数据
-        vertx.eventBus().consumer("mysql.douyin_user.insert", this::mysqlDouyinUserInsertHandler);
+        vertx.eventBus().consumer(MYSQL_DOUYIN_USER_INSERT.getTopic(), this::mysqlDouyinUserInsertHandler);
         // 用于插入视频数据
-        vertx.eventBus().consumer("mysql.douyin_video.insert", this::mysqlDouyinVideoInsertHandler);
+        vertx.eventBus().consumer(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), this::mysqlDouyinVideoInsertHandler);
         // 更新款表的status状态为'已处理用户数据'状态
-        vertx.eventBus().consumer("mysql.douyin_widedata.update.status.user", this::mysqlDouyinWideDataUpdateStatusUser);
+        vertx.eventBus().consumer(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_USER.getTopic(), this::mysqlDouyinWideDataUpdateStatusUser);
         // 更新款表的status状态为'已处理视频数据'状态
-        vertx.eventBus().consumer("mysql.douyin_widedata.update.status.video", this::mysqlDouyinWideDataUpdateStatusVideo);
+        vertx.eventBus().consumer(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_VIDEO.getTopic(), this::mysqlDouyinWideDataUpdateStatusVideo);
     }
 
     private void mysqlDouyinUserInsertHandler(Message<Object> message) {
