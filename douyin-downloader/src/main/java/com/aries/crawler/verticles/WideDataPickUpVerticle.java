@@ -31,7 +31,7 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
                 .column("*")
                 .from(DouyinCrawlerLogModel.TABLE)
                 .where(" status != " + DouyinCrawlerLogModel.STATUS_ALL_DONE)
-                .limit(100L)
+                .limit(10000L)
                 .orderBy("ct", false)
                 .toString();
 

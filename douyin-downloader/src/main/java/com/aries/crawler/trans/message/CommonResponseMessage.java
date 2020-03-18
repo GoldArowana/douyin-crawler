@@ -13,11 +13,13 @@ public class CommonResponseMessage<T> implements Messagable {
             .code(100)
             .message("success")
             .build();
+
     public static final CommonResponseMessage<Object> COMMON_FAILED_MESSAGE = CommonResponseMessage.CommonResponseMessageBuilder
             .aCommonResponseMessage()
             .code(1000)
             .message("failed")
             .build();
+
     private final Integer code;
     private final T message;
 

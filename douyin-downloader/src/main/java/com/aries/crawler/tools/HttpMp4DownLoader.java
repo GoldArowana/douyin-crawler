@@ -5,7 +5,7 @@ package com.aries.crawler.tools;
  */
 public class HttpMp4DownLoader {
 
-    public static void download(final String url, final String mp4Path, final String mp4FileName) {
+    public static void download(final String mp4Url, final String destFilePath, final String destFileName) {
 
     }
 }

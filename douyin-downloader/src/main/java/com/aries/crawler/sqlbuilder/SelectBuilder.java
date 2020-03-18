@@ -200,10 +200,10 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable {
         if (limit > 0) {
             sql.append(" limit ");
             sql.append(limit);
-        }
 
-        sql.append(" offset ");
-        sql.append(offset);
+            sql.append(" offset ");
+            sql.append(offset);
+        }
 
         if (forUpdate) {
             sql.append(" for update");

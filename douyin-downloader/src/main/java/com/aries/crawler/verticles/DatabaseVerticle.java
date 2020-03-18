@@ -82,6 +82,7 @@ public class DatabaseVerticle extends AbstractVerticle {
                 .set("share_url", videoInfoMessage.getVideoShareUrl())
                 .set("tag", videoInfoMessage.getVideoVideoTag())
                 .set("duration", videoInfoMessage.getVideoDuration())
+                .set("type", videoInfoMessage.getType())
                 .onDuplicateKeyUpdate("ut", getDateTimeAsString(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss"));
         logger.info("video sql:" + insertBuilder.getSql() + "---values:" + insertBuilder.getValues());
 
