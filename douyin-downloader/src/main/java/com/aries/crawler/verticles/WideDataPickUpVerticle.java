@@ -31,7 +31,7 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
                 .column("*")
                 .from(DouyinCrawlerLogModel.TABLE)
                 .where(" status != " + DouyinCrawlerLogModel.STATUS_ALL_DONE)
-                .limit(10000L)
+                .limit(1000L)
                 .orderBy("ct", false)
                 .toString();
 
@@ -53,7 +53,9 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        supplier.get();
+        vertx.setPeriodic(4000, id -> {
+            supplier.get();
+        });
     }
 
     public void processWideData(DouyinCrawlerLogModel model) {
