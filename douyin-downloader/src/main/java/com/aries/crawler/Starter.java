@@ -12,6 +12,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author arowana
  */
@@ -31,13 +33,12 @@ public class Starter {
         vertx.eventBus().registerDefaultCodec(DouyinVideoInfoMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinWideDataMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(CommonResponseMessage.class, new CommonMessageCodec<>());
-
-        logger.info("部署 宽表读取器");
-        var wideDataPickUpFuture = simpleDeploy(vertx, WideDataPickUpVerticle.class);
-        logger.info("部署 宽表数据派发器");
-        var wideDataDispatchFuture = optionalDeploy(vertx, WideDataDispatchVerticle.class, 5);
         logger.info("部署 数据处理器");
-        var databaseFuture = optionalDeploy(vertx, DatabaseVerticle.class, 5);
+        var databaseFuture = optionalDeploy(vertx, DatabaseVerticle.class, 4);
+        logger.info("部署 宽表数据派发器");
+        var wideDataDispatchFuture = optionalDeploy(vertx, WideDataDispatchVerticle.class, 2);
+        logger.info("部署 宽表读取器");
+        var wideDataPickUpFuture = optionalDeploy(vertx, WideDataPickUpVerticle.class, 1);
 
         logger.info("检查三个verticle是否都部署成功");
         CompositeFuture.all(wideDataPickUpFuture, databaseFuture, wideDataDispatchFuture).setHandler(ar -> {
@@ -79,9 +80,10 @@ public class Starter {
     public static Future<Void> optionalDeploy(Vertx vertx, Class<?> verticleType, int workerSize) {
         var options = new DeploymentOptions()
                 .setWorker(true)
-                .setInstances(workerSize)
                 .setWorkerPoolName(verticleType.getTypeName() + "-pool")
-                .setWorkerPoolSize(workerSize);
+                .setWorkerPoolSize(workerSize)
+                .setMaxWorkerExecuteTime(TimeUnit.SECONDS.toNanos(10))
+                .setInstances(workerSize);
 
         return Future.future(res -> {
             vertx.deployVerticle(verticleType.getTypeName(), options, deployRes -> {

@@ -7,12 +7,14 @@ import com.aries.crawler.trans.message.DouyinUserInfoMessage;
 import com.aries.crawler.trans.message.DouyinVideoInfoMessage;
 import com.aries.crawler.trans.message.SimpleInt64Message;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 import static com.aries.crawler.trans.EventBusTopic.*;
 import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_FAILED_MESSAGE;
@@ -32,13 +34,13 @@ public class DatabaseVerticle extends AbstractVerticle {
     @Override
     public void start() {
         // 用于插入用户数据
-        vertx.eventBus().consumer(MYSQL_DOUYIN_USER_INSERT.getTopic(), this::mysqlDouyinUserInsertHandler);
+        vertx.eventBus().consumer(MYSQL_DOUYIN_USER_INSERT.getTopic(), this::mysqlDouyinUserInsertHandler).setMaxBufferedMessages(400);
         // 用于插入视频数据
-        vertx.eventBus().consumer(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), this::mysqlDouyinVideoInsertHandler);
+        vertx.eventBus().consumer(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), this::mysqlDouyinVideoInsertHandler).setMaxBufferedMessages(400);
         // 更新款表的status状态为'已处理用户数据'状态
-        vertx.eventBus().consumer(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_USER.getTopic(), this::mysqlDouyinWideDataUpdateStatusUser);
+        vertx.eventBus().consumer(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_USER.getTopic(), this::mysqlDouyinWideDataUpdateStatusUser).setMaxBufferedMessages(400);
         // 更新款表的status状态为'已处理视频数据'状态
-        vertx.eventBus().consumer(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_VIDEO.getTopic(), this::mysqlDouyinWideDataUpdateStatusVideo);
+        vertx.eventBus().consumer(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_VIDEO.getTopic(), this::mysqlDouyinWideDataUpdateStatusVideo).setMaxBufferedMessages(400);
     }
 
     private void mysqlDouyinUserInsertHandler(Message<Object> message) {

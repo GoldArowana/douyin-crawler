@@ -3,9 +3,12 @@ package com.aries.crawler.verticles;
 import com.aries.crawler.model.douyincrawler.DouyinCrawlerLogModel;
 import com.aries.crawler.trans.message.*;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.aries.crawler.trans.EventBusTopic.*;
 import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_FAILED_MESSAGE;
@@ -26,7 +29,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        vertx.eventBus().consumer(LOGIC_WIDEDATA_DISPATCH.getTopic(), this::dispatch);
+        vertx.eventBus().consumer(LOGIC_WIDEDATA_DISPATCH.getTopic(), this::dispatch).setMaxBufferedMessages(400);
     }
 
     private void dispatch(Message<Object> message) {
@@ -37,7 +40,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
         if ((wideDataMessage.getStatus() & DouyinCrawlerLogModel.STATUS_USER_DONE) == 0) {
             logger.info("user not done :" + wideDataMessage.getAuthorUid());
             var douyinUserInfoMessage = DouyinUserInfoMessage.of(wideDataMessage);
-            vertx.eventBus().request(MYSQL_DOUYIN_USER_INSERT.getTopic(), douyinUserInfoMessage, insertReply -> {
+            vertx.eventBus().request(MYSQL_DOUYIN_USER_INSERT.getTopic(), douyinUserInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), insertReply -> {
                 if (insertReply.succeeded()) {
                     logger.info("Received reply succeeded, uid: " + douyinUserInfoMessage.getUid());
                     message.reply(COMMON_SUCCESS_MESSAGE);
@@ -56,7 +59,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
                         });
                     }
                 } else {
-                    logger.error("Received reply failed, uid: " + douyinUserInfoMessage.getUid());
+                    logger.error("Received reply failed, uid: " + douyinUserInfoMessage.getUid() + ",cause:" + insertReply.cause());
                     message.reply(COMMON_FAILED_MESSAGE);
                 }
             });
@@ -67,9 +70,9 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
             logger.info("video not done :" + wideDataMessage.getAwemeId());
 
             var douyinVideoInfoMessage = DouyinVideoInfoMessage.of(wideDataMessage);
-            vertx.eventBus().request(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), douyinVideoInfoMessage, reply -> {
+            vertx.eventBus().request(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), douyinVideoInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), reply -> {
                 if (reply.succeeded()) {
-                    logger.info("Received reply succeeded, awemeid: " + douyinVideoInfoMessage.getAwemeId());
+                    logger.info("Received reply succeeded, awemeid: " + douyinVideoInfoMessage.getAwemeId() + ",cause:" + reply.cause());
                     message.reply(COMMON_SUCCESS_MESSAGE);
 
 
@@ -86,7 +89,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
                         });
                     }
                 } else {
-                    logger.error("Received reply failed, awemeid: " + douyinVideoInfoMessage.getAwemeId());
+                    logger.error("Received reply failed, awemeid: " + douyinVideoInfoMessage.getAwemeId() + ",cause:" + reply.cause());
                     message.reply(COMMON_FAILED_MESSAGE);
                 }
             });

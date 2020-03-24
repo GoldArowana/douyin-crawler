@@ -33,7 +33,12 @@ public class MySqlClientHelper {
                     dbConfig.put("driver_class", "com.mysql.jdbc.Driver");
                     dbConfig.put("user", "root");
                     dbConfig.put("password", "1qaz2wsx"); // 反正是localhost, 密码随便看
-                    jdbcClient = JDBCClient.createShared(vertx, dbConfig);
+//                    dbConfig.put("provider_class", "io.vertx.ext.jdbc.spi.impl.HikariCPDataSourceProvider");
+                    dbConfig.put("maximumPoolSize", 200);
+                    dbConfig.put("cachePrepStmts", true);
+                    dbConfig.put("prepStmtCacheSize", 250);
+                    dbConfig.put("prepStmtCacheSqlLimit", 2048);
+                    jdbcClient = JDBCClient.createShared(vertx, dbConfig, "my-data-pool¬");
                 }
             }
         }
