@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static com.aries.crawler.trans.EventBusTopic.LOGIC_WIDEDATA_DISPATCH;
+import static com.aries.crawler.trans.EventBusTopic.LOGIC_DOUYIN_WIDEDATA_DISPATCH;
 
 
 /**
@@ -31,7 +31,7 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
                 .column("*")
                 .from(DouyinCrawlerLogModel.TABLE)
                 .where(" status != " + DouyinCrawlerLogModel.STATUS_ALL_DONE)
-                .limit(200L)
+                .limit(1000L)
                 .orderBy("ct", false)
                 .toString();
 
@@ -53,7 +53,7 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        vertx.setPeriodic(2000, id -> {
+        vertx.setPeriodic(10000, id -> {
             supplier.get();
         });
     }
@@ -65,7 +65,7 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
         }
 
         var douyinWideDataMessage = DouyinWideDataMessage.of(model);
-        vertx.eventBus().request(LOGIC_WIDEDATA_DISPATCH.getTopic(), douyinWideDataMessage, reply -> {
+        vertx.eventBus().request(LOGIC_DOUYIN_WIDEDATA_DISPATCH.getTopic(), douyinWideDataMessage, reply -> {
             if (reply.succeeded()) {
                 logger.info("Received reply from dispatch succeeded. wide data id: " + douyinWideDataMessage.getId());
             } else {

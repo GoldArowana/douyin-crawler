@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.aries.crawler.verticles.DatabaseVerticle.getDateTimeAsString;
+import static com.aries.crawler.verticles.UpdateDataVerticle.getDateTimeAsString;
 
 public class AppTest {
     @Test

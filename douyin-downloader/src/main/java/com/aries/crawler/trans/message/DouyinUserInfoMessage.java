@@ -8,24 +8,10 @@ import com.aries.crawler.trans.Messagable;
  *
  * @author arowana
  */
-public class DouyinUserInfoMessage implements Messagable {
-    private final Long uid;
-    private final Long shortId;
-    private final String nickname;
-    private final String signature;
-    private final String avatarLargerUrl;
-    private final String shareUrl;
-    private final String shareInfoQrCodeUrl;
 
-    public DouyinUserInfoMessage(Long uid, Long shortId, String nickname, String signature, String avatarLargerUrl, String shareUrl, String shareInfoQrCodeUrl) {
-        this.uid = uid;
-        this.shortId = shortId;
-        this.nickname = nickname;
-        this.signature = signature;
-        this.avatarLargerUrl = avatarLargerUrl;
-        this.shareUrl = shareUrl;
-        this.shareInfoQrCodeUrl = shareInfoQrCodeUrl;
-    }
+public record DouyinUserInfoMessage(Long uid, Long shortId, String nickname, String signature,
+                                    String avatarLargerUrl, String shareUrl,
+                                    String shareInfoQrCodeUrl) implements Messagable {
 
     public static DouyinUserInfoMessage of(DouyinWideDataMessage wideDataMessage) {
         return new DouyinUserInfoMessageBuilder()
@@ -37,47 +23,6 @@ public class DouyinUserInfoMessage implements Messagable {
                 .shareUrl(Urls.getUserSharePage(wideDataMessage.getAuthorUid()))
                 .shareInfoQrCodeUrl(wideDataMessage.getAuthorShareInfoQrcodeUrl())
                 .build();
-    }
-
-    public Long getUid() {
-        return uid;
-    }
-
-    public Long getShortId() {
-        return shortId;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public String getAvatarLargerUrl() {
-        return avatarLargerUrl;
-    }
-
-    public String getShareUrl() {
-        return shareUrl;
-    }
-
-    public String getShareInfoQrCodeUrl() {
-        return shareInfoQrCodeUrl;
-    }
-
-    @Override
-    public String toString() {
-        return "DouyinUserInfoMessage{" +
-                "uid=" + uid +
-                ", shortId=" + shortId +
-                ", nickname='" + nickname + '\'' +
-                ", signature='" + signature + '\'' +
-                ", avatarLargerUrl='" + avatarLargerUrl + '\'' +
-                ", shareUrl='" + shareUrl + '\'' +
-                ", shareInfoQrCodeUrl='" + shareInfoQrCodeUrl + '\'' +
-                '}';
     }
 
     public static final class DouyinUserInfoMessageBuilder {

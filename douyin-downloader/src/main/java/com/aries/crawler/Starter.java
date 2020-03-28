@@ -2,9 +2,7 @@ package com.aries.crawler;
 
 import com.aries.crawler.trans.codec.CommonMessageCodec;
 import com.aries.crawler.trans.message.*;
-import com.aries.crawler.verticles.DatabaseVerticle;
-import com.aries.crawler.verticles.WideDataDispatchVerticle;
-import com.aries.crawler.verticles.WideDataPickUpVerticle;
+import com.aries.crawler.verticles.*;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
@@ -12,6 +10,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,15 +33,26 @@ public class Starter {
         vertx.eventBus().registerDefaultCodec(DouyinVideoInfoMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinWideDataMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(CommonResponseMessage.class, new CommonMessageCodec<>());
-        logger.info("部署 数据处理器");
-        var databaseFuture = optionalDeploy(vertx, DatabaseVerticle.class, 4);
-        logger.info("部署 宽表数据派发器");
-        var wideDataDispatchFuture = optionalDeploy(vertx, WideDataDispatchVerticle.class, 2);
-        logger.info("部署 宽表读取器");
-        var wideDataPickUpFuture = optionalDeploy(vertx, WideDataPickUpVerticle.class, 1);
 
-        logger.info("检查三个verticle是否都部署成功");
-        CompositeFuture.all(wideDataPickUpFuture, databaseFuture, wideDataDispatchFuture).setHandler(ar -> {
+        List<Future> futures = new ArrayList<>();
+
+        logger.info("部署 用户插入器");
+        futures.add(optionalDeploy(vertx, UserInsertVerticle.class, 1));
+        logger.info("部署 视频插入器");
+        futures.add(optionalDeploy(vertx, VideoInsertVerticle.class, 1));
+        logger.info("部署 数据处理器");
+        futures.add(optionalDeploy(vertx, UpdateDataVerticle.class, 1));
+        logger.info("部署 宽表数据派发器");
+        futures.add(optionalDeploy(vertx, WideDataDispatchVerticle.class, 1));
+        logger.info("部署 宽表读取器");
+        futures.add(optionalDeploy(vertx, WideDataPickUpVerticle.class, 1));
+        logger.info("部署 视频数据读取器");
+        futures.add(optionalDeploy(vertx, VideoDataPickUpVerticle.class, 1));
+        logger.info("部署 视频数据读取器");
+        futures.add(optionalDeploy(vertx, VideoUrlParseVerticle.class, 1));
+
+        logger.info("检查verticle是否都部署成功");
+        CompositeFuture.all(futures).setHandler(ar -> {
             if (ar.succeeded()) {
                 logger.info("所有Verticle启动完成");
             } else {

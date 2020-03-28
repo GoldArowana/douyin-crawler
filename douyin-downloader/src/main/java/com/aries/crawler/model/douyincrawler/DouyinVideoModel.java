@@ -12,17 +12,33 @@ import java.time.LocalDateTime;
  * @author arowana
  */
 public class DouyinVideoModel implements DataModelable {
-    @MysqlField(alias = "id", type = BigInteger.class)
-    public BigInteger id;
+    /**
+     * 默认值。未处理。
+     */
+    public static final Integer STATUS_VIDEO_DOWNLOAD_DEFAULT = 0;
+    /**
+     * 下载成功
+     */
+    public static final Integer STATUS_VIDEO_DOWNLOAD_SUCCESS = 1;
+
+    /**
+     * 下载失败
+     */
+    public static final Integer STATUS_VIDEO_DOWNLOAD_FAILED = 2;
+
+    public static final String TABLE = "douyin_video_info";
+
+    @MysqlField(alias = "id", type = Long.class)
+    public Long id;
 
     @MysqlField(alias = "comments", type = String.class)
     public String comments;
 
-    @MysqlField(alias = "create_time", type = BigInteger.class)
-    public BigInteger createTime;
+    @MysqlField(alias = "create_time", type = Long.class)
+    public Long createTime;
 
-    @MysqlField(alias = "uid", type = BigInteger.class)
-    public BigInteger uid;
+    @MysqlField(alias = "uid", type = Long.class)
+    public Long uid;
 
     @MysqlField(alias = "cover_url", type = String.class)
     public String coverUrl;
@@ -39,8 +55,9 @@ public class DouyinVideoModel implements DataModelable {
     @MysqlField(alias = "tag", type = String.class)
     public String tag;
 
-    @MysqlField(alias = "duration", type = BigInteger.class)
-    public BigInteger duration;
+    @MysqlField(alias = "duration", type = Long.class)
+    public Long duration;
+
     @MysqlField(alias = "type", type = Integer.class)
     public Integer type;
 
@@ -53,11 +70,11 @@ public class DouyinVideoModel implements DataModelable {
     @MysqlField(alias = "ut", type = LocalDateTime.class)
     public String ut;
 
-    public BigInteger getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -69,19 +86,19 @@ public class DouyinVideoModel implements DataModelable {
         this.comments = comments;
     }
 
-    public BigInteger getCreateTime() {
+    public Long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(BigInteger createTime) {
+    public void setCreateTime(Long createTime) {
         this.createTime = createTime;
     }
 
-    public BigInteger getUid() {
+    public Long getUid() {
         return uid;
     }
 
-    public void setUid(BigInteger uid) {
+    public void setUid(Long uid) {
         this.uid = uid;
     }
 
@@ -125,11 +142,11 @@ public class DouyinVideoModel implements DataModelable {
         this.tag = tag;
     }
 
-    public BigInteger getDuration() {
+    public Long getDuration() {
         return duration;
     }
 
-    public void setDuration(BigInteger duration) {
+    public void setDuration(Long duration) {
         this.duration = duration;
     }
 

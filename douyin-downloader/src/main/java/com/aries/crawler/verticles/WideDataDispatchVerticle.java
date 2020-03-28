@@ -29,7 +29,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        vertx.eventBus().consumer(LOGIC_WIDEDATA_DISPATCH.getTopic(), this::dispatch).setMaxBufferedMessages(400);
+        vertx.eventBus().consumer(LOGIC_DOUYIN_WIDEDATA_DISPATCH.getTopic(), this::dispatch).setMaxBufferedMessages(4000);
     }
 
     private void dispatch(Message<Object> message) {
@@ -42,7 +42,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
             var douyinUserInfoMessage = DouyinUserInfoMessage.of(wideDataMessage);
             vertx.eventBus().request(MYSQL_DOUYIN_USER_INSERT.getTopic(), douyinUserInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), insertReply -> {
                 if (insertReply.succeeded()) {
-                    logger.info("Received reply succeeded, uid: " + douyinUserInfoMessage.getUid());
+                    logger.info("Received reply succeeded, uid: " + douyinUserInfoMessage.uid());
                     message.reply(COMMON_SUCCESS_MESSAGE);
 
 
@@ -59,7 +59,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
                         });
                     }
                 } else {
-                    logger.error("Received reply failed, uid: " + douyinUserInfoMessage.getUid() + ",cause:" + insertReply.cause());
+                    logger.error("Received reply failed, uid: " + douyinUserInfoMessage.uid() + ",cause:" + insertReply.cause());
                     message.reply(COMMON_FAILED_MESSAGE);
                 }
             });
@@ -72,7 +72,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
             var douyinVideoInfoMessage = DouyinVideoInfoMessage.of(wideDataMessage);
             vertx.eventBus().request(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), douyinVideoInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), reply -> {
                 if (reply.succeeded()) {
-                    logger.info("Received reply succeeded, awemeid: " + douyinVideoInfoMessage.getAwemeId() + ",cause:" + reply.cause());
+                    logger.info("Received reply succeeded, awemeid: " + douyinVideoInfoMessage.awemeId() + ",cause:" + reply.cause());
                     message.reply(COMMON_SUCCESS_MESSAGE);
 
 
@@ -89,7 +89,7 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
                         });
                     }
                 } else {
-                    logger.error("Received reply failed, awemeid: " + douyinVideoInfoMessage.getAwemeId() + ",cause:" + reply.cause());
+                    logger.error("Received reply failed, awemeid: " + douyinVideoInfoMessage.awemeId() + ",cause:" + reply.cause());
                     message.reply(COMMON_FAILED_MESSAGE);
                 }
             });
