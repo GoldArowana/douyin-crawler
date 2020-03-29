@@ -15,13 +15,13 @@ public record DouyinUserInfoMessage(Long uid, Long shortId, String nickname, Str
 
     public static DouyinUserInfoMessage of(DouyinWideDataMessage wideDataMessage) {
         return new DouyinUserInfoMessageBuilder()
-                .uid(wideDataMessage.getAuthorUid())
-                .shortId(wideDataMessage.getAuthorShortId())
-                .nickname(wideDataMessage.getAuthorNickname())
-                .signature(wideDataMessage.getAuthorSignature())
-                .avatarLargerUrl(wideDataMessage.getAvatarLargerUrl())
-                .shareUrl(Urls.getUserSharePage(wideDataMessage.getAuthorUid()))
-                .shareInfoQrCodeUrl(wideDataMessage.getAuthorShareInfoQrcodeUrl())
+                .uid(wideDataMessage.authorUid())
+                .shortId(wideDataMessage.authorShortId())
+                .nickname(wideDataMessage.authorNickname())
+                .signature(wideDataMessage.authorSignature())
+                .avatarLargerUrl(wideDataMessage.avatarLargerUrl())
+                .shareUrl(Urls.getUserSharePage(wideDataMessage.authorUid()))
+                .shareInfoQrCodeUrl(wideDataMessage.authorShareInfoQrcodeUrl())
                 .build();
     }
 

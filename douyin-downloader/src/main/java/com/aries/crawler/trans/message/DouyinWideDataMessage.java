@@ -10,50 +10,12 @@ import java.math.BigInteger;
  *
  * @author arowana
  */
-public class DouyinWideDataMessage implements Messagable {
-    private final BigInteger id;
-    private final Long awemeId;
-    private final String awemeDesc;
-    private final Long awemeCreateTime;
-    private final Long authorUid;
-    private final Long authorShortId;
-    private final String authorNickname;
-    private final String authorSignature;
-    private final String avatarLargerUrl;
-    private final String authorShareInfoQrcodeUrl;
-    private final String videoCoverUrl;
-    private final String videoDynamicCoverUrl;
-    private final String videoDownloadAddrUrl;
-    private final String videoShareUrl;
-    private final String videoVideoTag;
-    private final Long videoDuration;
-    private final Integer type;
-    private final Integer status;
-    private final String ct;
-    private final String ut;
-
-    public DouyinWideDataMessage(BigInteger id, Long awemeId, String awemeDesc, Long awemeCreateTime, Long authorUid, Long authorShortId, String authorNickname, String authorSignature, String avatarLargerUrl, String authorShareInfoQrcodeUrl, String videoCoverUrl, String videoDynamicCoverUrl, String videoDownloadAddrUrl, String videoShareUrl, String videoVideoTag, Long videoDuration, Integer type, Integer status, String ct, String ut) {
-        this.id = id;
-        this.awemeId = awemeId;
-        this.awemeDesc = awemeDesc;
-        this.awemeCreateTime = awemeCreateTime;
-        this.authorUid = authorUid;
-        this.authorShortId = authorShortId;
-        this.authorNickname = authorNickname;
-        this.authorSignature = authorSignature;
-        this.avatarLargerUrl = avatarLargerUrl;
-        this.authorShareInfoQrcodeUrl = authorShareInfoQrcodeUrl;
-        this.videoCoverUrl = videoCoverUrl;
-        this.videoDynamicCoverUrl = videoDynamicCoverUrl;
-        this.videoDownloadAddrUrl = videoDownloadAddrUrl;
-        this.videoShareUrl = videoShareUrl;
-        this.videoVideoTag = videoVideoTag;
-        this.videoDuration = videoDuration;
-        this.type = type;
-        this.status = status;
-        this.ct = ct;
-        this.ut = ut;
-    }
+public record DouyinWideDataMessage(BigInteger id, Long awemeId, String awemeDesc, Long awemeCreateTime,
+                                    Long authorUid, Long authorShortId, String authorNickname, String authorSignature,
+                                    String avatarLargerUrl, String authorShareInfoQrcodeUrl,
+                                    String videoCoverUrl, String videoDynamicCoverUrl, String videoDownloadAddrUrl,
+                                    String videoShareUrl, String videoVideoTag, Long videoDuration,
+                                    Integer type, Integer status, String ct, String ut) implements Messagable {
 
     public static DouyinWideDataMessage of(DouyinCrawlerLogModel douyinCrawlerLogModel) {
         return new DouyinWideDataMessageBuilder()
@@ -78,112 +40,6 @@ public class DouyinWideDataMessage implements Messagable {
                 .ct(douyinCrawlerLogModel.getCt())
                 .ut(douyinCrawlerLogModel.getUt())
                 .build();
-    }
-
-    public BigInteger getId() {
-        return id;
-    }
-
-    public Long getAwemeId() {
-        return awemeId;
-    }
-
-    public String getAwemeDesc() {
-        return awemeDesc;
-    }
-
-    public Long getAwemeCreateTime() {
-        return awemeCreateTime;
-    }
-
-    public Long getAuthorUid() {
-        return authorUid;
-    }
-
-    public Long getAuthorShortId() {
-        return authorShortId;
-    }
-
-    public String getAuthorNickname() {
-        return authorNickname;
-    }
-
-    public String getAuthorSignature() {
-        return authorSignature;
-    }
-
-    public String getAvatarLargerUrl() {
-        return avatarLargerUrl;
-    }
-
-    public String getAuthorShareInfoQrcodeUrl() {
-        return authorShareInfoQrcodeUrl;
-    }
-
-    public String getVideoCoverUrl() {
-        return videoCoverUrl;
-    }
-
-    public String getVideoDynamicCoverUrl() {
-        return videoDynamicCoverUrl;
-    }
-
-    public String getVideoDownloadAddrUrl() {
-        return videoDownloadAddrUrl;
-    }
-
-    public String getVideoShareUrl() {
-        return videoShareUrl;
-    }
-
-    public String getVideoVideoTag() {
-        return videoVideoTag;
-    }
-
-    public Long getVideoDuration() {
-        return videoDuration;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public String getCt() {
-        return ct;
-    }
-
-    public String getUt() {
-        return ut;
-    }
-
-    @Override
-    public String toString() {
-        return "DouyinWideDataMessage{" +
-                "id=" + id +
-                ", awemeId=" + awemeId +
-                ", awemeDesc='" + awemeDesc + '\'' +
-                ", awemeCreateTime=" + awemeCreateTime +
-                ", authorUid=" + authorUid +
-                ", authorShortId=" + authorShortId +
-                ", authorNickname='" + authorNickname + '\'' +
-                ", authorSignature='" + authorSignature + '\'' +
-                ", avatarLargerUrl='" + avatarLargerUrl + '\'' +
-                ", authorShareInfoQrcodeUrl='" + authorShareInfoQrcodeUrl + '\'' +
-                ", videoCoverUrl='" + videoCoverUrl + '\'' +
-                ", videoDynamicCoverUrl='" + videoDynamicCoverUrl + '\'' +
-                ", videoDownloadAddrUrl='" + videoDownloadAddrUrl + '\'' +
-                ", videoShareUrl='" + videoShareUrl + '\'' +
-                ", videoVideoTag='" + videoVideoTag + '\'' +
-                ", videoDuration=" + videoDuration +
-                ", type=" + type +
-                ", status=" + status +
-                ", ct=" + ct +
-                ", ut=" + ut +
-                '}';
     }
 
     public static final class DouyinWideDataMessageBuilder {

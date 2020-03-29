@@ -7,7 +7,7 @@ import com.aries.crawler.trans.Messagable;
  *
  * @author arowana
  */
-public class CommonResponseMessage<T> implements Messagable {
+public record CommonResponseMessage<T>(Integer code, T message) implements Messagable {
     public static final CommonResponseMessage<Object> COMMON_SUCCESS_MESSAGE = CommonResponseMessage.CommonResponseMessageBuilder
             .aCommonResponseMessage()
             .code(100)
@@ -19,30 +19,6 @@ public class CommonResponseMessage<T> implements Messagable {
             .code(1000)
             .message("failed")
             .build();
-
-    private final Integer code;
-    private final T message;
-
-    public CommonResponseMessage(Integer code, T message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public Integer getCode() {
-        return code;
-    }
-
-    public T getMessage() {
-        return message;
-    }
-
-    @Override
-    public String toString() {
-        return "CommonResponseMessage{" +
-                "code=" + code +
-                ", message=" + message +
-                '}';
-    }
 
     public static final class CommonResponseMessageBuilder<T> {
         private Integer code;

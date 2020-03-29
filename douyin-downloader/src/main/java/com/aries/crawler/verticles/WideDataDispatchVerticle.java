@@ -37,8 +37,8 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
         logger.debug(wideDataMessage);
 
         // 如果 用户部分的数据 未处于已处理状态
-        if ((wideDataMessage.getStatus() & DouyinCrawlerLogModel.STATUS_USER_DONE) == 0) {
-            logger.info("user not done :" + wideDataMessage.getAuthorUid());
+        if ((wideDataMessage.status() & DouyinCrawlerLogModel.STATUS_USER_DONE) == 0) {
+            logger.info("user not done :" + wideDataMessage.authorUid());
             var douyinUserInfoMessage = DouyinUserInfoMessage.of(wideDataMessage);
             vertx.eventBus().request(MYSQL_DOUYIN_USER_INSERT.getTopic(), douyinUserInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), insertReply -> {
                 if (insertReply.succeeded()) {
@@ -47,9 +47,9 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
 
 
                     var replyMessage = (CommonResponseMessage) insertReply.result().body();
-                    logger.info("reply message user:" + replyMessage.getCode());
-                    if (replyMessage.getCode() == 100) {
-                        var idMessage = new SimpleInt64Message(wideDataMessage.getId());
+                    logger.info("reply message user:" + replyMessage.code());
+                    if (replyMessage.code() == 100) {
+                        var idMessage = new SimpleInt64Message(wideDataMessage.id());
                         vertx.eventBus().request(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_USER.getTopic(), idMessage, updateReply -> {
                             if (updateReply.succeeded()) {
                                 logger.info("update status user succ ...");
@@ -66,8 +66,8 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
         }
 
         // 如果 视频部分的数据 未处于已处理状态
-        if ((wideDataMessage.getStatus() & DouyinCrawlerLogModel.STATUS_VIDEO_DONE) == 0) {
-            logger.info("video not done :" + wideDataMessage.getAwemeId());
+        if ((wideDataMessage.status() & DouyinCrawlerLogModel.STATUS_VIDEO_DONE) == 0) {
+            logger.info("video not done :" + wideDataMessage.awemeId());
 
             var douyinVideoInfoMessage = DouyinVideoInfoMessage.of(wideDataMessage);
             vertx.eventBus().request(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), douyinVideoInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), reply -> {
@@ -77,9 +77,9 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
 
 
                     var replyMessage = (CommonResponseMessage) reply.result().body();
-                    logger.info("reply message video:" + replyMessage.getCode());
-                    if (replyMessage.getCode() == 100) {
-                        var idMessage = new SimpleInt64Message(wideDataMessage.getId());
+                    logger.info("reply message video:" + replyMessage.code());
+                    if (replyMessage.code() == 100) {
+                        var idMessage = new SimpleInt64Message(wideDataMessage.id());
                         vertx.eventBus().request(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_VIDEO.getTopic(), idMessage, updateReply -> {
                             if (updateReply.succeeded()) {
                                 logger.info("update status video succ ...");

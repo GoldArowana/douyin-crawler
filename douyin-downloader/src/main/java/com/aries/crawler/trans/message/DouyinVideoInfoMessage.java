@@ -15,17 +15,17 @@ public record DouyinVideoInfoMessage(Long awemeId, Long authorUid, String awemeD
 
     public static DouyinVideoInfoMessage of(DouyinWideDataMessage wideDataMessage) {
         return new DouyinVideoInfoMessageBuilder()
-                .awemeId(wideDataMessage.getAwemeId())
-                .awemeDesc(wideDataMessage.getAwemeDesc())
-                .awemeCreateTime(wideDataMessage.getAwemeCreateTime())
-                .authorUid(wideDataMessage.getAuthorUid())
-                .videoCoverUrl(wideDataMessage.getVideoCoverUrl())
-                .videoDynamicCoverUrl(wideDataMessage.getVideoDynamicCoverUrl())
-                .videoDownloadAddrUrl(wideDataMessage.getVideoDownloadAddrUrl())
-                .videoShareUrl(wideDataMessage.getVideoShareUrl())
-                .videoVideoTag(wideDataMessage.getVideoVideoTag())
-                .videoDuration(wideDataMessage.getVideoDuration())
-                .type(wideDataMessage.getType())
+                .awemeId(wideDataMessage.awemeId())
+                .awemeDesc(wideDataMessage.awemeDesc())
+                .awemeCreateTime(wideDataMessage.awemeCreateTime())
+                .authorUid(wideDataMessage.authorUid())
+                .videoCoverUrl(wideDataMessage.videoCoverUrl())
+                .videoDynamicCoverUrl(wideDataMessage.videoDynamicCoverUrl())
+                .videoDownloadAddrUrl(wideDataMessage.videoDownloadAddrUrl())
+                .videoShareUrl(wideDataMessage.videoShareUrl())
+                .videoVideoTag(wideDataMessage.videoVideoTag())
+                .videoDuration(wideDataMessage.videoDuration())
+                .type(wideDataMessage.type())
                 .build();
     }
 

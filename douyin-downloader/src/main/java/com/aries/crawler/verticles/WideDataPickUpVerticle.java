@@ -67,9 +67,9 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
         var douyinWideDataMessage = DouyinWideDataMessage.of(model);
         vertx.eventBus().request(LOGIC_DOUYIN_WIDEDATA_DISPATCH.getTopic(), douyinWideDataMessage, reply -> {
             if (reply.succeeded()) {
-                logger.info("Received reply from dispatch succeeded. wide data id: " + douyinWideDataMessage.getId());
+                logger.info("Received reply from dispatch succeeded. wide data id: " + douyinWideDataMessage.id());
             } else {
-                logger.error("Received reply from dispatch failed. wide data id: " + douyinWideDataMessage.getId() + ". cause" + reply.cause());
+                logger.error("Received reply from dispatch failed. wide data id: " + douyinWideDataMessage.id() + ". cause" + reply.cause());
             }
         });
     }
