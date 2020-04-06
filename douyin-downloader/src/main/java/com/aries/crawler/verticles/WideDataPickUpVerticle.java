@@ -26,7 +26,7 @@ import static com.aries.crawler.trans.EventBusTopic.LOGIC_DOUYIN_WIDEDATA_DISPAT
 public class WideDataPickUpVerticle extends AbstractVerticle {
     private static final Logger logger = LoggerFactory.getLogger(WideDataPickUpVerticle.class);
 
-    private Supplier<Void> supplier = () -> {
+    private final Supplier<Void> pickUpWideDataSupplier = () -> {
         var sql = new SelectBuilder()
                 .column("*")
                 .from(DouyinCrawlerLogModel.TABLE)
@@ -35,16 +35,20 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
                 .orderBy("ct", false)
                 .toString();
 
-        logger.info("构建pick up sql: " + sql);
         MySqlExecuteHelper.prepareExecute(vertx, sql, new ArrayList<>(), mysqlExecutorRes -> {
+            logger.info("prepare to pick up wide data. sql: " + sql);
             if (mysqlExecutorRes.succeeded()) {
-                List<JsonObject> rows = mysqlExecutorRes.result().getRows();
-                for (JsonObject row : rows) {
-                    var model = Orm.getModel(row, DouyinCrawlerLogModel.class);
-                    processWideData(model);
-                }
+                vertx.executeBlocking(future -> {
+                    List<JsonObject> rows = mysqlExecutorRes.result().getRows();
+                    for (JsonObject row : rows) {
+                        var model = Orm.getModel(row, DouyinCrawlerLogModel.class);
+                        processWideData(model);
+                    }
+                }, res -> {
+                    // ignore
+                });
             } else {
-                logger.error("execute pick up sql failed: " + mysqlExecutorRes.cause());
+                logger.error("pick wide data failed, sql:" + sql + ", cause: " + mysqlExecutorRes.cause());
             }
         });
 
@@ -54,7 +58,7 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
     @Override
     public void start() {
         vertx.setPeriodic(10000, id -> {
-            supplier.get();
+            pickUpWideDataSupplier.get();
         });
     }
 
@@ -67,9 +71,16 @@ public class WideDataPickUpVerticle extends AbstractVerticle {
         var douyinWideDataMessage = DouyinWideDataMessage.of(model);
         vertx.eventBus().request(LOGIC_DOUYIN_WIDEDATA_DISPATCH.getTopic(), douyinWideDataMessage, reply -> {
             if (reply.succeeded()) {
-                logger.info("Received reply from dispatch succeeded. wide data id: " + douyinWideDataMessage.id());
+                logger.info("reply success from topic: " + LOGIC_DOUYIN_WIDEDATA_DISPATCH.getTopic() +
+                        ", wide data id: " + douyinWideDataMessage.id() +
+                        ", authorUid:" + douyinWideDataMessage.authorUid() +
+                        ", awemeid: " + douyinWideDataMessage.awemeId());
             } else {
-                logger.error("Received reply from dispatch failed. wide data id: " + douyinWideDataMessage.id() + ". cause" + reply.cause());
+                logger.info("reply success from topic: " + LOGIC_DOUYIN_WIDEDATA_DISPATCH.getTopic() +
+                        ", wide data id: " + douyinWideDataMessage.id() +
+                        ", authorUid:" + douyinWideDataMessage.authorUid() +
+                        ", awemeid: " + douyinWideDataMessage.awemeId() +
+                        ". cause:" + reply.cause());
             }
         });
     }

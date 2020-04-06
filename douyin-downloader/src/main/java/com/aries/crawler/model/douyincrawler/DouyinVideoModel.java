@@ -3,7 +3,6 @@ package com.aries.crawler.model.douyincrawler;
 import com.aries.crawler.annotation.MysqlField;
 import com.aries.crawler.model.DataModelable;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 /**

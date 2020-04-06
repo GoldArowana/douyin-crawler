@@ -24,39 +24,34 @@ public class Starter {
         // Force to use slf4j. 参考自dgate：https://github.com/DTeam-Top/dgate/blob/master/src/main/java/top/dteam/dgate/Launcher.java
         System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
 
-        logger.info("全局vert.x");
         var vertx = Vertx.vertx();
 
-        logger.info("注册解码器");
+        logger.info("register codec");
+        vertx.eventBus().registerCodec(new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(SimpleInt64Message.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinUserInfoMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinVideoInfoMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(DouyinWideDataMessage.class, new CommonMessageCodec<>());
         vertx.eventBus().registerDefaultCodec(CommonResponseMessage.class, new CommonMessageCodec<>());
 
-        List<Future> futures = new ArrayList<>();
+        logger.info("deploying verticles");
+        List<Future> futures = new ArrayList<>() {
+            {
+                add(optionalDeploy(vertx, UserInsertVerticle.class, 1));
+                add(optionalDeploy(vertx, VideoInsertVerticle.class, 1));
+                add(optionalDeploy(vertx, UpdateDataVerticle.class, 1));
+                add(optionalDeploy(vertx, WideDataDispatchVerticle.class, 1));
+                add(optionalDeploy(vertx, WideDataPickUpVerticle.class, 1));
+                add(optionalDeploy(vertx, VideoDataPickUpVerticle.class, 1));
+                add(optionalDeploy(vertx, VideoDownloadVerticle.class, 1));
+            }
+        };
 
-        logger.info("部署 用户插入器");
-        futures.add(optionalDeploy(vertx, UserInsertVerticle.class, 1));
-        logger.info("部署 视频插入器");
-        futures.add(optionalDeploy(vertx, VideoInsertVerticle.class, 1));
-        logger.info("部署 数据处理器");
-        futures.add(optionalDeploy(vertx, UpdateDataVerticle.class, 1));
-        logger.info("部署 宽表数据派发器");
-        futures.add(optionalDeploy(vertx, WideDataDispatchVerticle.class, 1));
-        logger.info("部署 宽表读取器");
-        futures.add(optionalDeploy(vertx, WideDataPickUpVerticle.class, 1));
-        logger.info("部署 视频数据读取器");
-        futures.add(optionalDeploy(vertx, VideoDataPickUpVerticle.class, 1));
-        logger.info("部署 视频数据读取器");
-        futures.add(optionalDeploy(vertx, VideoUrlParseVerticle.class, 1));
-
-        logger.info("检查verticle是否都部署成功");
         CompositeFuture.all(futures).setHandler(ar -> {
             if (ar.succeeded()) {
-                logger.info("所有Verticle启动完成");
+                logger.info("all verticle start");
             } else {
-                logger.error("至少有一个服务器启动失败: " + ar.cause());
+                logger.error("verticle(s) failed: " + ar.cause());
             }
         });
     }

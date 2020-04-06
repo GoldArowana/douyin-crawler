@@ -11,8 +11,7 @@ import io.vertx.core.logging.LoggerFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static com.aries.crawler.trans.EventBusTopic.MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_USER;
-import static com.aries.crawler.trans.EventBusTopic.MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_VIDEO;
+import static com.aries.crawler.trans.EventBusTopic.*;
 import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_FAILED_MESSAGE;
 import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_SUCCESS_MESSAGE;
 
@@ -33,6 +32,10 @@ public class UpdateDataVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_USER.getTopic(), this::mysqlDouyinWideDataUpdateStatusUser).setMaxBufferedMessages(4000);
         // 更新款表的status状态为'已处理视频数据'状态
         vertx.eventBus().consumer(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_VIDEO.getTopic(), this::mysqlDouyinWideDataUpdateStatusVideo).setMaxBufferedMessages(4000);
+        // 更新完成下载的视频
+        vertx.eventBus().consumer(MYSQL_DOUYIN_VIDEO__UPDATE_STATUS_DOWNLOADED.getTopic(), this::mysqlDouyinVideoDataUpdateStatusDownloaded).setMaxBufferedMessages(4000);
+        // 更新下载失败的视频
+        vertx.eventBus().consumer(MYSQL_DOUYIN_VIDEO__UPDATE_STATUS_FAILED.getTopic(), this::mysqlDouyinVideoDataUpdateStatusFailed).setMaxBufferedMessages(4000);
     }
 
     private void mysqlDouyinWideDataUpdateStatusUser(Message<Object> message) {
@@ -41,7 +44,7 @@ public class UpdateDataVerticle extends AbstractVerticle {
         // 构建sql数据, 插入用户信息。
         var insertBuilder = new UpdateBuilder("douyin_crawler_log")
                 .set("status = status | 1")
-                .where("id=" + idMessage.getId())
+                .where("id=" + idMessage.id())
                 .toString();
 
         MySqlExecuteHelper.execute(vertx, insertBuilder, mysqlExecutorRes -> {
@@ -59,7 +62,43 @@ public class UpdateDataVerticle extends AbstractVerticle {
         // 构建sql数据, 插入用户信息。
         var insertBuilder = new UpdateBuilder("douyin_crawler_log")
                 .set("status = status | 2")
-                .where("id=" + idMessage.getId())
+                .where("id=" + idMessage.id())
+                .toString();
+
+        MySqlExecuteHelper.execute(vertx, insertBuilder, mysqlExecutorRes -> {
+            if (mysqlExecutorRes.succeeded()) {
+                message.reply(COMMON_SUCCESS_MESSAGE);
+            } else {
+                message.reply(COMMON_FAILED_MESSAGE);
+            }
+        });
+    }
+
+    private void mysqlDouyinVideoDataUpdateStatusDownloaded(Message<Object> message) {
+        var idMessage = (SimpleInt64Message) message.body();
+
+        // 构建sql数据, 插入用户信息。
+        var insertBuilder = new UpdateBuilder("douyin_video_info")
+                .set("status = status | 1")
+                .where("id=" + idMessage.id())
+                .toString();
+
+        MySqlExecuteHelper.execute(vertx, insertBuilder, mysqlExecutorRes -> {
+            if (mysqlExecutorRes.succeeded()) {
+                message.reply(COMMON_SUCCESS_MESSAGE);
+            } else {
+                message.reply(COMMON_FAILED_MESSAGE);
+            }
+        });
+    }
+
+    private void mysqlDouyinVideoDataUpdateStatusFailed(Message<Object> message) {
+        var idMessage = (SimpleInt64Message) message.body();
+
+        // 构建sql数据, 插入用户信息。
+        var insertBuilder = new UpdateBuilder("douyin_video_info")
+                .set("status = status | 2")
+                .where("id=" + idMessage.id())
                 .toString();
 
         MySqlExecuteHelper.execute(vertx, insertBuilder, mysqlExecutorRes -> {

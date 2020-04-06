@@ -49,6 +49,7 @@ public class VideoInsertVerticle extends AbstractVerticle {
                 .set("duration", videoInfoMessage.videoDuration())
                 .set("type", videoInfoMessage.type())
                 .onDuplicateKeyUpdate("ut", getDateTimeAsString(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss"));
+
         logger.info("video sql:" + insertBuilder.getSql() + "---values:" + insertBuilder.getValues());
 
         MySqlExecuteHelper.prepareExecute(vertx, insertBuilder.getSql(), insertBuilder.getValues(), mysqlExecutorRes -> {

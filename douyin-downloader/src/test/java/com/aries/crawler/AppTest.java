@@ -1,12 +1,15 @@
 package com.aries.crawler;
 
 import com.aries.crawler.sqlbuilder.InsertBuilder;
-import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.RequestOptions;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static com.aries.crawler.verticles.UpdateDataVerticle.getDateTimeAsString;
 
@@ -15,8 +18,8 @@ public class AppTest {
     public void shouldAnswerWithTrue() {
         Vertx vertx = Vertx.vertx();
 
-//        HttpClient client = vertx.createHttpClient();
-//        client.getNow("v9-dy-z.ixigua.com", "/ced073a2be8a2051e43a6f44d1a9f229/5e5d48bb/video/tos/cn/tos-cn-ve-15/78b8080fe66949899e020ede57832b86/?a=1128&br=0&bt=719&cr=0&cs=0&dr=0&ds=3&er=&l=202003030055560100140472051C5FC589&lr=aweme&qs=0&rc=anBtd2Z1aDc2czMzNmkzM0ApM2U6NDs1ZjxkN2lkZzpoOmdjX3NwLm1mMmFfLS0zLS9zcy5fNGFgXy0uLV9eLjNhYmM6Yw%3D%3D&vl=&vr=", response -> {
+        HttpClient client = vertx.createHttpClient();
+//        client.getNow("aweme.snssdk.com", "/aweme/v1/playwm/?s_vid=93f1b41336a8b7a442dbf1c29c6bbc560cdca46fc197329a17cb02eef09b72493338e49045f75c3a6cd886d97de228c6e6a1f93d3b9a63a26a63e40654c6655e&line=0", response -> {
 //            System.out.println("Received response with status code " + response.statusCode());
 //            response.bodyHandler(x -> {
 //                vertx.fileSystem().writeFile("target/classes/a.mp4", Buffer.buffer(x.getBytes()), result -> {
@@ -29,26 +32,29 @@ public class AppTest {
 //            });
 //        });
 
-        Future<Void> fut1 = Future.future(promise -> vertx.fileSystem().createFile("target/classes/foo", promise));
-
-        Future<Void> fut2 = fut1.compose(x -> {
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        client.get(new RequestOptions().setHost("aweme.snssdk.com").setURI("/aweme/v1/playwm/?s_vid=93f1b41336a8b7a442dbf1c29c6bbc560cdca46fc197329a17cb02eef09b72493338e49045f75c3a6cd886d97de228c6e6a1f93d3b9a63a26a63e40654c6655e&line=0").addHeader("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"), response -> {
+            for (Map.Entry<String, String> header : response.headers()) {
+                System.out.println(header);
             }
-            System.out.println("结束");
-            return Future.<Void>future(promise -> vertx.fileSystem().createFile("target/classes/foo2", promise));
-        });
-
+            System.out.println("Received response with status code " + response.statusCode());
+            response.bodyHandler(x -> {
+                vertx.fileSystem().writeFile("target/classes/a.mp4", Buffer.buffer(x.getBytes()), result -> {
+                    if (result.succeeded()) {
+                        System.out.println("File written");
+                    } else {
+                        System.err.println("Oh oh ..." + result.cause());
+                    }
+                });
+            });
+        })
+                .setFollowRedirects(true)
+                .end();
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
 
     }
 

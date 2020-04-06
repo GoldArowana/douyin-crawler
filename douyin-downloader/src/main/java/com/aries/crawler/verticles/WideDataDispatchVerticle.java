@@ -1,17 +1,20 @@
 package com.aries.crawler.verticles;
 
 import com.aries.crawler.model.douyincrawler.DouyinCrawlerLogModel;
-import com.aries.crawler.trans.message.*;
+import com.aries.crawler.trans.message.DouyinUserInfoMessage;
+import com.aries.crawler.trans.message.DouyinVideoInfoMessage;
+import com.aries.crawler.trans.message.DouyinWideDataMessage;
+import com.aries.crawler.trans.message.SimpleInt64Message;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 import static com.aries.crawler.trans.EventBusTopic.*;
-import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_FAILED_MESSAGE;
 import static com.aries.crawler.trans.message.CommonResponseMessage.COMMON_SUCCESS_MESSAGE;
 
 /**
@@ -34,53 +37,37 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
 
     private void dispatch(Message<Object> message) {
         var wideDataMessage = (DouyinWideDataMessage) message.body();
-        logger.debug(wideDataMessage);
 
         // 如果 用户部分的数据 未处于已处理状态
         if ((wideDataMessage.status() & DouyinCrawlerLogModel.STATUS_USER_DONE) == 0) {
-            logger.info("user not done :" + wideDataMessage.authorUid());
-            var douyinUserInfoMessage = DouyinUserInfoMessage.of(wideDataMessage);
-            vertx.eventBus().request(MYSQL_DOUYIN_USER_INSERT.getTopic(), douyinUserInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), insertReply -> {
-                if (insertReply.succeeded()) {
-                    logger.info("Received reply succeeded, uid: " + douyinUserInfoMessage.uid());
-                    message.reply(COMMON_SUCCESS_MESSAGE);
-
-
-                    var replyMessage = (CommonResponseMessage) insertReply.result().body();
-                    logger.info("reply message user:" + replyMessage.code());
-                    if (replyMessage.code() == 100) {
-                        var idMessage = new SimpleInt64Message(wideDataMessage.id());
-                        vertx.eventBus().request(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_USER.getTopic(), idMessage, updateReply -> {
-                            if (updateReply.succeeded()) {
-                                logger.info("update status user succ ...");
-                            } else {
-                                logger.info("update status user fail ...");
-                            }
-                        });
-                    }
-                } else {
-                    logger.error("Received reply failed, uid: " + douyinUserInfoMessage.uid() + ",cause:" + insertReply.cause());
-                    message.reply(COMMON_FAILED_MESSAGE);
-                }
-            });
+            logger.info("user data need to be parsed, uid:" + wideDataMessage.authorUid());
+            processUser(DouyinUserInfoMessage.of(wideDataMessage), wideDataMessage.id());
         }
 
         // 如果 视频部分的数据 未处于已处理状态
         if ((wideDataMessage.status() & DouyinCrawlerLogModel.STATUS_VIDEO_DONE) == 0) {
-            logger.info("video not done :" + wideDataMessage.awemeId());
+            logger.info("video data need to be parsed, awemeid:" + wideDataMessage.awemeId());
+            processVideo(DouyinVideoInfoMessage.of(wideDataMessage), wideDataMessage.id());
+        }
 
-            var douyinVideoInfoMessage = DouyinVideoInfoMessage.of(wideDataMessage);
-            vertx.eventBus().request(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), douyinVideoInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), reply -> {
-                if (reply.succeeded()) {
-                    logger.info("Received reply succeeded, awemeid: " + douyinVideoInfoMessage.awemeId() + ",cause:" + reply.cause());
-                    message.reply(COMMON_SUCCESS_MESSAGE);
+        message.reply(COMMON_SUCCESS_MESSAGE);
 
+    }
 
-                    var replyMessage = (CommonResponseMessage) reply.result().body();
-                    logger.info("reply message video:" + replyMessage.code());
-                    if (replyMessage.code() == 100) {
-                        var idMessage = new SimpleInt64Message(wideDataMessage.id());
-                        vertx.eventBus().request(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_VIDEO.getTopic(), idMessage, updateReply -> {
+    private void processVideo(DouyinVideoInfoMessage douyinVideoInfoMessage, BigInteger wideDataId) {
+        logger.info("prepare to insert video, awemeid: " + douyinVideoInfoMessage.awemeId());
+        vertx.eventBus().request(MYSQL_DOUYIN_VIDEO_INSERT.getTopic(), douyinVideoInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), insertReply -> {
+            vertx.executeBlocking(future -> {
+                if (insertReply.succeeded()) {
+                    logger.info("insert video reply succeeded, awemeid: " + douyinVideoInfoMessage.awemeId());
+                    future.complete(100);
+                } else {
+                    logger.error("insert video reply failed, awemeid: " + douyinVideoInfoMessage.awemeId() + ",cause:" + insertReply.cause());
+                }
+            }, res -> {
+                if (res.result() instanceof Integer s) {
+                    if (s.equals(100)) {
+                        vertx.eventBus().request(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_VIDEO.getTopic(), new SimpleInt64Message(wideDataId), updateReply -> {
                             if (updateReply.succeeded()) {
                                 logger.info("update status video succ ...");
                             } else {
@@ -88,11 +75,34 @@ public class WideDataDispatchVerticle extends AbstractVerticle {
                             }
                         });
                     }
-                } else {
-                    logger.error("Received reply failed, awemeid: " + douyinVideoInfoMessage.awemeId() + ",cause:" + reply.cause());
-                    message.reply(COMMON_FAILED_MESSAGE);
                 }
             });
-        }
+        });
+    }
+
+    private void processUser(DouyinUserInfoMessage douyinUserInfoMessage, BigInteger wideDataId) {
+        logger.info("prepare to insert user, uid:" + douyinUserInfoMessage.uid());
+        vertx.eventBus().request(MYSQL_DOUYIN_USER_INSERT.getTopic(), douyinUserInfoMessage, new DeliveryOptions().setSendTimeout(TimeUnit.SECONDS.toMillis(20)), insertReply -> {
+            vertx.executeBlocking(future -> {
+                if (insertReply.succeeded()) {
+                    logger.info("insert user reply succeeded, uid: " + douyinUserInfoMessage.uid());
+                    future.complete(100);
+                } else {
+                    logger.error("insert user reply failed, uid: " + douyinUserInfoMessage.uid() + ",cause:" + insertReply.cause());
+                }
+            }, res -> {
+                if (res.result() instanceof Integer s) {
+                    if (s.equals(100)) {
+                        vertx.eventBus().request(MYSQL_DOUYIN_WIDEDATA_UPDATE_STATUS_USER.getTopic(), new SimpleInt64Message(wideDataId), updateReply -> {
+                            if (updateReply.succeeded()) {
+                                logger.info("update status user succ ...");
+                            } else {
+                                logger.info("update status user fail ...");
+                            }
+                        });
+                    }
+                }
+            });
+        });
     }
 }
